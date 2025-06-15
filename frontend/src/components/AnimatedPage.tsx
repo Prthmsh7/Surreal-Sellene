@@ -1,19 +1,23 @@
-import { Box } from '@chakra-ui/react'
-import { motion } from 'framer-motion'
+import { Box } from '@chakra-ui/react';
+import { motion } from 'framer-motion';
+import { ReactNode } from 'react';
 
-const MotionBox = motion(Box)
+interface AnimatedPageProps {
+  children: ReactNode;
+}
 
-const AnimatedPage = ({ children }: { children: React.ReactNode }) => {
+const AnimatedPage = ({ children }: AnimatedPageProps) => {
   return (
-    <MotionBox
+    <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
       transition={{ duration: 0.3 }}
+      style={{ zIndex: 1 }}
     >
       {children}
-    </MotionBox>
-  )
-}
+    </motion.div>
+  );
+};
 
-export default AnimatedPage 
+export default AnimatedPage; 

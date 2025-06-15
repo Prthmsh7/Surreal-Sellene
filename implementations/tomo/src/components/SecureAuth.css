@@ -1,0 +1,162 @@
+.secure-auth {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin: 2rem 0;
+}
+
+.secure-auth h2 {
+    color: #333;
+    margin-bottom: 1.5rem;
+    font-size: 1.8rem;
+}
+
+.auth-warning {
+    background: #fff3cd;
+    border-left: 4px solid #ffc107;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin: 1.5rem 0;
+}
+
+.auth-warning h3 {
+    color: #856404;
+    margin: 0 0 0.5rem;
+    font-size: 1.2rem;
+}
+
+.security-status {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+}
+
+.security-status h3 {
+    color: #495057;
+    margin: 0 0 1rem;
+    font-size: 1.2rem;
+}
+
+.security-indicators {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: #e9ecef;
+    border-radius: 20px;
+    opacity: 0.6;
+}
+
+.indicator.active {
+    background: #e6f4ea;
+    opacity: 1;
+}
+
+.indicator .icon {
+    font-size: 1.2rem;
+}
+
+.indicator .label {
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.security-methods {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+}
+
+.security-method {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+    transition: all 0.2s;
+}
+
+.security-method:hover {
+    border-color: #dee2e6;
+    transform: translateY(-2px);
+}
+
+.method-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.method-icon {
+    font-size: 1.5rem;
+}
+
+.method-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: #495057;
+}
+
+.method-description {
+    color: #6c757d;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.setup-button {
+    width: 100%;
+    padding: 0.75rem;
+    background: #0066cc;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.setup-button:hover {
+    background: #0052a3;
+}
+
+.setup-button:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+.security-tips {
+    background: #e3f2fd;
+    padding: 1.5rem;
+    border-radius: 8px;
+    border-left: 4px solid #1976d2;
+    margin-top: 2rem;
+}
+
+.security-tips h3 {
+    color: #1976d2;
+    margin: 0 0 1rem;
+    font-size: 1.2rem;
+}
+
+.security-tips ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.security-tips li {
+    margin: 0.5rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #2962ff;
+} 

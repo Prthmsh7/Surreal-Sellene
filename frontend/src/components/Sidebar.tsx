@@ -1,184 +1,136 @@
 import {
   Box,
   VStack,
-  Text,
-  Button,
-  useColorModeValue,
-  Divider,
   Icon,
+  Text,
+  Link,
+  useColorModeValue,
+  useBreakpointValue,
+  Collapse,
+  useDisclosure,
+  Button,
+  Divider,
 } from '@chakra-ui/react'
 import { Link as RouterLink, useLocation } from 'react-router-dom'
-import {
+import { 
   FaChartLine,
   FaGlobe,
   FaCalendarAlt,
   FaChartPie,
   FaCalendarDay,
-  FaCog,
-  FaMusic,
-  FaPalette,
-  FaBook,
-  FaWallet,
-  FaExchangeAlt,
-  FaHistory,
-  FaHome,
+  FaUser,
 } from 'react-icons/fa'
+import { motion } from 'framer-motion'
+
+const MotionBox = motion(Box)
 
 const Sidebar = () => {
   const location = useLocation()
   const bgColor = useColorModeValue('brand.darkGray', 'brand.darkGray')
   const borderColor = useColorModeValue('brand.lightGray', 'brand.lightGray')
+  const isMobile = useBreakpointValue({ base: true, md: false })
+  const { isOpen, onToggle } = useDisclosure()
 
   const navItems = [
     {
-      text: "Home",
-      icon: FaHome,
-      path: "/",
+      icon: FaUser,
+      label: 'Profile',
+      path: '/profile',
     },
     {
-      text: "Dashboard",
-      icon: FaChartLine,
-      path: "/dashboard",
-    },
-    {
-      text: "Portfolio",
-      icon: FaWallet,
-      path: "/dashboard/portfolio",
-    },
-    {
-      text: "Marketplace",
-      icon: FaExchangeAlt,
-      path: "/dashboard/marketplace",
-    },
-    {
-      text: "History",
-      icon: FaHistory,
-      path: "/dashboard/history",
-    },
-    {
-      text: "Categories",
       icon: null,
+      label: 'Analytics',
+      path: null,
     },
     {
-      text: "Music",
-      icon: FaMusic,
-      path: "/dashboard/music",
-    },
-    {
-      text: "Art",
-      icon: FaPalette,
-      path: "/dashboard/art",
-    },
-    {
-      text: "Writing",
-      icon: FaBook,
-      path: "/dashboard/writing",
-    },
-    {
-      text: "Analytics",
-      icon: null,
-    },
-    {
-      text: "Overview",
       icon: FaChartLine,
-      path: "/dashboard/overview",
+      label: 'Overview',
+      path: '/dashboard/overview',
     },
     {
-      text: "Geography",
       icon: FaGlobe,
-      path: "/dashboard/geography",
+      label: 'Geography',
+      path: '/dashboard/geography',
     },
     {
-      text: "Monthly",
       icon: FaCalendarAlt,
-      path: "/dashboard/monthly",
+      label: 'Monthly',
+      path: '/dashboard/monthly',
     },
     {
-      text: "Breakdown",
       icon: FaChartPie,
-      path: "/dashboard/breakdown",
+      label: 'Breakdown',
+      path: '/dashboard/breakdown',
     },
     {
-      text: "Daily",
       icon: FaCalendarDay,
-      path: "/dashboard/daily",
-    },
-    {
-      text: "Settings",
-      icon: FaCog,
-      path: "/dashboard/settings",
+      label: 'Daily',
+      path: '/dashboard/daily',
     },
   ]
 
   return (
     <Box
       as="nav"
-      h="100%"
+      position="fixed"
+      left={0}
+      top={0}
+      bottom={0}
+      w={{ base: "full", md: "240px" }}
       bg={bgColor}
       borderRight="1px"
       borderColor={borderColor}
+      py={4}
+      zIndex="sticky"
+      display={{ base: isOpen ? "block" : "none", md: "block" }}
     >
-      <VStack
-        spacing={1}
-        align="stretch"
-        p={3}
-        overflowY="auto"
-        h="100%"
-        css={{
-          '&::-webkit-scrollbar': {
-            width: '4px',
-          },
-          '&::-webkit-scrollbar-track': {
-            width: '6px',
-          },
-          '&::-webkit-scrollbar-thumb': {
-            background: 'brand.lightGray',
-            borderRadius: '24px',
-          },
-        }}
-      >
+      <VStack spacing={2} align="stretch" px={4}>
         {navItems.map((item, index) => {
           if (item.icon === null) {
             return (
-              <Box key={index} py={1}>
+              <Box key={index} py={2}>
                 <Text
-                  color="brand.lightGray"
+                  color="brand.blue"
                   fontSize="sm"
                   fontWeight="bold"
                   textTransform="uppercase"
                   letterSpacing="wider"
+                  px={4}
                 >
-                  {item.text}
+                  {item.label}
                 </Text>
                 <Divider mt={2} borderColor={borderColor} />
               </Box>
             )
           }
 
-          const isActive = location.pathname === item.path
           return (
-            <Button
-              key={item.text}
+            <Link
+              key={item.path}
               as={RouterLink}
               to={item.path}
-              variant="ghost"
-              justifyContent="flex-start"
-              leftIcon={<Icon as={item.icon} />}
-              bg={isActive ? "brand.blue" : "transparent"}
-              color={isActive ? "white" : "brand.lightGray"}
-              _hover={{
-                bg: isActive ? "brand.blue" : "brand.black",
-                color: "white",
-              }}
-              h="36px"
-              px={4}
-              w="100%"
-              transition="all 0.2s"
+              _hover={{ textDecoration: 'none' }}
             >
-              <Text fontSize="sm" fontWeight="medium">
-                {item.text}
-              </Text>
-            </Button>
+              <MotionBox
+                whileHover={{ x: 4 }}
+                transition={{ duration: 0.2 }}
+              >
+                <Button
+                  variant="ghost"
+                  w="full"
+                  justifyContent="flex-start"
+                  leftIcon={<Icon as={item.icon} />}
+                  color={location.pathname === item.path ? 'brand.blue' : 'white'}
+                  bg={location.pathname === item.path ? 'whiteAlpha.100' : 'transparent'}
+                  _hover={{
+                    bg: 'whiteAlpha.200',
+                  }}
+                  size="lg"
+                >
+                  <Text>{item.label}</Text>
+                </Button>
+              </MotionBox>
+            </Link>
           )
         })}
       </VStack>

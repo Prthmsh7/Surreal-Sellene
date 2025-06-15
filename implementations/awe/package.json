@@ -1,0 +1,25 @@
+{
+  "name": "awe-network-integration",
+  "version": "1.0.0",
+  "description": "AWE Network integration with DeBridge",
+  "main": "index.ts",
+  "scripts": {
+    "test": "jest",
+    "build": "tsc",
+    "start": "ts-node index.ts"
+  },
+  "dependencies": {
+    "@awe-network/sdk": "^1.0.0",
+    "@awe-network/contracts": "^1.0.0",
+    "ethers": "^6.0.0",
+    "dotenv": "^16.0.0",
+    "typescript": "^5.0.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.0.0",
+    "@types/node": "^20.0.0",
+    "jest": "^29.0.0",
+    "ts-jest": "^29.0.0",
+    "ts-node": "^10.0.0"
+  }
+} 

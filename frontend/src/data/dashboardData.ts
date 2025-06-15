@@ -1,34 +1,34 @@
-import { FaChartLine, FaUsers, FaCoins, FaLock, FaMusic, FaPalette, FaBook } from 'react-icons/fa'
+import { FaChartLine, FaUsers, FaCoins, FaLock, FaPalette, FaImage, FaPaintBrush, FaCamera } from 'react-icons/fa'
 
 // Overview Data
 export const overviewStats = [
   {
-    title: "Total Sales",
-    value: "$24,500",
-    change: "+12%",
+    title: "Total Art Sales",
+    value: "$124,500",
+    change: "+18%",
     icon: FaChartLine,
     color: "brand.blue"
   },
   {
-    title: "Active Users",
-    value: "1,234",
-    change: "+8%",
+    title: "Active Artists",
+    value: "2,567",
+    change: "+12%",
     icon: FaUsers,
     color: "brand.green"
   },
   {
     title: "Total Revenue",
-    value: "$45,678",
-    change: "+15%",
+    value: "$245,678",
+    change: "+25%",
     icon: FaCoins,
     color: "brand.yellow"
   },
   {
-    title: "Protected IPs",
-    value: "567",
-    change: "+23%",
-    icon: FaLock,
-    color: "brand.red"
+    title: "Art Pieces",
+    value: "15,234",
+    change: "+32%",
+    icon: FaPalette,
+    color: "brand.purple"
   }
 ]
 
@@ -53,61 +53,61 @@ export const geographyData = {
 // Monthly Data
 export const monthlyData = {
   sales: [
-    { month: "Jan", value: 12000 },
-    { month: "Feb", value: 15000 },
-    { month: "Mar", value: 18000 },
-    { month: "Apr", value: 22000 },
-    { month: "May", value: 25000 },
-    { month: "Jun", value: 28000 },
-    { month: "Jul", value: 30000 },
-    { month: "Aug", value: 32000 },
-    { month: "Sep", value: 35000 },
-    { month: "Oct", value: 38000 },
-    { month: "Nov", value: 40000 },
-    { month: "Dec", value: 45000 }
+    { month: "Jan", value: 45000 },
+    { month: "Feb", value: 52000 },
+    { month: "Mar", value: 58000 },
+    { month: "Apr", value: 62000 },
+    { month: "May", value: 68000 },
+    { month: "Jun", value: 72000 },
+    { month: "Jul", value: 78000 },
+    { month: "Aug", value: 85000 },
+    { month: "Sep", value: 92000 },
+    { month: "Oct", value: 98000 },
+    { month: "Nov", value: 105000 },
+    { month: "Dec", value: 124500 }
   ],
   users: [
-    { month: "Jan", value: 800 },
-    { month: "Feb", value: 950 },
-    { month: "Mar", value: 1100 },
-    { month: "Apr", value: 1250 },
-    { month: "May", value: 1400 },
-    { month: "Jun", value: 1550 },
-    { month: "Jul", value: 1700 },
-    { month: "Aug", value: 1850 },
-    { month: "Sep", value: 2000 },
-    { month: "Oct", value: 2150 },
-    { month: "Nov", value: 2300 },
-    { month: "Dec", value: 2450 }
+    { month: "Jan", value: 1800 },
+    { month: "Feb", value: 1950 },
+    { month: "Mar", value: 2100 },
+    { month: "Apr", value: 2250 },
+    { month: "May", value: 2400 },
+    { month: "Jun", value: 2550 },
+    { month: "Jul", value: 2700 },
+    { month: "Aug", value: 2850 },
+    { month: "Sep", value: 3000 },
+    { month: "Oct", value: 3150 },
+    { month: "Nov", value: 3300 },
+    { month: "Dec", value: 3450 }
   ]
 }
 
 // Breakdown Data
 export const breakdownData = {
   categories: [
-    { name: "Music", value: 35, icon: FaMusic },
-    { name: "Art", value: 25, icon: FaPalette },
-    { name: "Writing", value: 20, icon: FaBook },
-    { name: "Other", value: 20, icon: FaChartLine }
+    { name: "Digital Art", value: 45, icon: FaPalette },
+    { name: "Photography", value: 25, icon: FaCamera },
+    { name: "Illustrations", value: 20, icon: FaPaintBrush },
+    { name: "Other", value: 10, icon: FaImage }
   ],
   subcategories: {
-    music: [
-      { name: "Songs", value: 40 },
-      { name: "Albums", value: 30 },
-      { name: "Soundtracks", value: 20 },
-      { name: "Other", value: 10 }
-    ],
-    art: [
-      { name: "Digital Art", value: 45 },
-      { name: "Paintings", value: 25 },
-      { name: "Sculptures", value: 20 },
-      { name: "Other", value: 10 }
-    ],
-    writing: [
-      { name: "Books", value: 50 },
-      { name: "Articles", value: 30 },
-      { name: "Poems", value: 15 },
+    digitalArt: [
+      { name: "NFTs", value: 50 },
+      { name: "Digital Paintings", value: 30 },
+      { name: "3D Art", value: 15 },
       { name: "Other", value: 5 }
+    ],
+    photography: [
+      { name: "Fine Art", value: 40 },
+      { name: "Portraits", value: 30 },
+      { name: "Landscape", value: 20 },
+      { name: "Other", value: 10 }
+    ],
+    illustrations: [
+      { name: "Character Design", value: 45 },
+      { name: "Concept Art", value: 25 },
+      { name: "Comics", value: 20 },
+      { name: "Other", value: 10 }
     ]
   }
 }
@@ -115,52 +115,52 @@ export const breakdownData = {
 // Daily Data
 export const dailyData = {
   stats: [
-    { day: "Monday", users: 65, sales: 1200 },
-    { day: "Tuesday", users: 59, sales: 1100 },
-    { day: "Wednesday", users: 80, sales: 1500 },
-    { day: "Thursday", users: 81, sales: 1600 },
-    { day: "Friday", users: 56, sales: 1000 },
-    { day: "Saturday", users: 55, sales: 900 },
-    { day: "Sunday", users: 40, sales: 800 }
+    { day: "Monday", users: 165, sales: 5200 },
+    { day: "Tuesday", users: 159, sales: 5100 },
+    { day: "Wednesday", users: 180, sales: 5500 },
+    { day: "Thursday", users: 181, sales: 5600 },
+    { day: "Friday", users: 156, sales: 5000 },
+    { day: "Saturday", users: 155, sales: 4900 },
+    { day: "Sunday", users: 140, sales: 4800 }
   ],
   recentTransactions: [
     {
       id: 1,
-      asset: "Summer Vibes Album",
-      category: "Music",
-      amount: 1200,
+      asset: "Digital Landscape #123",
+      category: "Digital Art",
+      amount: 2.5,
       date: "2024-03-15",
       status: "completed"
     },
     {
       id: 2,
-      asset: "Digital Art Collection",
-      category: "Art",
-      amount: 2500,
+      asset: "Portrait Collection",
+      category: "Photography",
+      amount: 1.8,
       date: "2024-03-14",
       status: "pending"
     },
     {
       id: 3,
-      asset: "Novel Rights",
-      category: "Writing",
-      amount: 3500,
+      asset: "Character Design Set",
+      category: "Illustrations",
+      amount: 3.2,
       date: "2024-03-13",
       status: "completed"
     },
     {
       id: 4,
-      asset: "Song License",
-      category: "Music",
-      amount: 800,
+      asset: "Abstract NFT #456",
+      category: "Digital Art",
+      amount: 1.5,
       date: "2024-03-12",
       status: "completed"
     },
     {
       id: 5,
-      asset: "Art Exhibition",
-      category: "Art",
-      amount: 1800,
+      asset: "Fine Art Photography",
+      category: "Photography",
+      amount: 2.8,
       date: "2024-03-11",
       status: "pending"
     }
@@ -177,25 +177,25 @@ export const portfolioData = {
   trendingAssets: [
     {
       id: 1,
-      name: "Summer Vibes Album",
-      category: "Music",
-      price: 1200,
+      name: "Digital Landscape #123",
+      category: "Digital Art",
+      price: 2.5,
       trend: "+15%",
       owners: 3
     },
     {
       id: 2,
-      name: "Digital Art Collection",
-      category: "Art",
-      price: 2500,
+      name: "Portrait Collection",
+      category: "Photography",
+      price: 1.8,
       trend: "+8%",
       owners: 5
     },
     {
       id: 3,
-      name: "Novel Rights",
-      category: "Writing",
-      price: 3500,
+      name: "Character Design Set",
+      category: "Illustrations",
+      price: 3.2,
       trend: "+12%",
       owners: 2
     }

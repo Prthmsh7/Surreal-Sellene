@@ -1,30 +1,6 @@
-import {
-  Box,
-  Heading,
-  Text,
-  VStack,
-  Container,
-  SimpleGrid,
-  Button,
-  useColorModeValue,
-  Icon,
-  Flex,
-  Code,
-  HStack,
-  Badge,
-  Link,
-  Stat,
-  StatLabel,
-  StatNumber,
-  StatHelpText,
-  Image,
-} from '@chakra-ui/react'
-import { FaGithub, FaBook, FaCode, FaRocket, FaTerminal, FaUsers, FaCoins, FaChartLine, FaHandshake, FaLock, FaGlobe, FaShieldAlt } from 'react-icons/fa'
-import { Link as RouterLink } from 'react-router-dom'
-import { motion } from 'framer-motion'
-import AnimatedPage from '../components/AnimatedPage'
-
-const MotionBox = motion(Box)
+import { Box } from '@chakra-ui/react'
+import MarqueeMenu from '../components/MarqueeMenu'
+import '../components/MarqueeMenu.css'
 
 const Developers = () => {
   const bgColor = useColorModeValue('brand.darkerGray', 'brand.darkerGray')
@@ -99,12 +75,12 @@ const Developers = () => {
                   <HStack spacing={4}>
                     <Button
                       as={RouterLink}
-                      to="/creator"
+                      to="/register-ip"
                       colorScheme="blue"
                       size="lg"
                       leftIcon={<FaRocket />}
                     >
-                      Join as Creator
+                      Start Creating
                     </Button>
                     <Button
                       as={RouterLink}
@@ -327,24 +303,9 @@ const StatCard = ({ icon, label, value, helpText }: { icon: any; label: string; 
 
 const SecurityCard = ({ icon, title, description }: { icon: any; title: string; description: string }) => {
   return (
-    <MotionBox
-      whileHover={{ y: -5 }}
-      transition={{ duration: 0.2 }}
-    >
-      <VStack
-        p={6}
-        bg="brand.darkGray"
-        rounded="lg"
-        align="start"
-        spacing={4}
-        border="1px"
-        borderColor="brand.lightGray"
-      >
-        <Icon as={icon} w={8} h={8} color="brand.blue" />
-        <Heading size="md" color="white" fontFamily="heading">{title}</Heading>
-        <Text color="brand.lightGray">{description}</Text>
-      </VStack>
-    </MotionBox>
+    <Box as="main" minH="100vh" bg="var(--color-bg)" overflow="hidden">
+      <MarqueeMenu />
+    </Box>
   )
 }
 

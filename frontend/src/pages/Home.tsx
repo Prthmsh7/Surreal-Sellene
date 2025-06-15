@@ -1,164 +1,363 @@
 import {
   Box,
-  Button,
   Container,
-  Flex,
-  Heading,
-  Icon,
   Image,
-  Stack,
+  VStack,
   Text,
   useColorModeValue,
-  VStack,
   HStack,
-  SimpleGrid,
+  Icon,
+  Button,
+  Link,
+  Grid,
+  GridItem,
+  Flex,
+  Circle,
+  useToken,
+  useToast,
 } from '@chakra-ui/react'
+import { keyframes } from '@emotion/react'
 import { motion } from 'framer-motion'
-import { FaRocket, FaChartLine, FaLock, FaExchangeAlt, FaUsers } from 'react-icons/fa'
-import { Link as RouterLink } from 'react-router-dom'
+import { 
+  FaArrowRight,
+  FaPalette,
+  FaChartLine,
+  FaShieldAlt,
+  FaGlobe,
+  FaCoins,
+  FaUsers,
+  FaLock,
+  FaRocket,
+} from 'react-icons/fa'
 import AnimatedPage from '../components/AnimatedPage'
+import selleneLogo from '../assets/Sellene-logo-light.png'
+import { TestIPRegistration } from '../components/TestIPRegistration'
 
-const MotionBox = motion(Box)
+import { Link as RouterLink, useNavigate } from 'react-router-dom'
 
-const Feature = ({ icon, title, text }: { icon: any; title: string; text: string }) => {
-  return (
-    <Stack spacing={4} align="center" textAlign="center">
-      <Icon as={icon} w={10} h={10} color="brand.blue" />
-      <Text fontWeight="bold" fontSize="xl" color="white">{title}</Text>
-      <Text color="brand.lightGray">{text}</Text>
-    </Stack>
-  )
-}
+
+const MotionBox = motion.create(Box)
+
+const float = keyframes`
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+  100% { transform: translateY(0px); }
+`
+
+const pulse = keyframes`
+  0% { transform: scale(1); opacity: 0.5; }
+  50% { transform: scale(1.1); opacity: 0.8; }
+  100% { transform: scale(1); opacity: 0.5; }
+`
+
+const rotate = keyframes`
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+`
 
 const Home = () => {
+  const navigate = useNavigate()
+  const toast = useToast()
   const bgColor = useColorModeValue('brand.darkGray', 'brand.darkGray')
-  const borderColor = useColorModeValue('brand.lightGray', 'brand.lightGray')
+  const [blue, purple] = useToken('colors', ['brand.blue', 'brand.purple'])
+
+  const handleStartCreating = () => {
+    toast({
+      title: "Connect Wallet",
+      description: "Please connect your wallet to start creating and exploring masterpieces",
+      status: "info",
+      duration: 5000,
+      isClosable: true,
+    })
+  }
+
+  const handleLearnMore = () => {
+    navigate('/about')
+  }
 
   return (
     <AnimatedPage>
-      <Box bg={bgColor} minH="100vh">
-        {/* Hero Section */}
-        <Box py={20} bg="brand.darkerGray">
-          <Container maxW="1200px">
-            <Flex
-              direction={{ base: 'column', md: 'row' }}
-              align="center"
-              justify="space-between"
-              gap={8}
+      <Box 
+        bg={bgColor} 
+        h="100vh"
+        position="relative"
+        overflow="hidden"
+        style={{ zIndex: 0 }}
+      >
+        {/* Animated background elements */}
+        <Box
+          position="absolute"
+          top="10%"
+          left="5%"
+          w="400px"
+          h="400px"
+          borderRadius="full"
+          bgGradient={`radial(${blue}, ${purple})`}
+          opacity="0.1"
+          filter="blur(40px)"
+          animation={`${float} 8s ease-in-out infinite`}
+        />
+        <Box
+          position="absolute"
+          bottom="10%"
+          right="5%"
+          w="500px"
+          h="500px"
+          borderRadius="full"
+          bgGradient={`radial(${purple}, ${blue})`}
+          opacity="0.1"
+          filter="blur(40px)"
+          animation={`${float} 8s ease-in-out infinite reverse`}
+        />
+
+        <Container maxW="container.xl" position="relative" zIndex="1" h="100vh" py={4}>
+          <Grid 
+            templateRows="1fr"
+            gap={4}
+            h="full"
+          >
+            <GridItem>
+              <Grid 
+                templateColumns={{ base: "1fr", lg: "1fr 1fr" }} 
+                gap={8} 
+                alignItems="center"
+                h="full"
+              >
+                {/* Left Column - Logo and Main Content */}
+                <GridItem>
+                  <VStack align="center" spacing={4}>
+                    <MotionBox
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.8 }}
+                      position="relative"
+                      w="full"
+                      display="flex"
+                      justifyContent="center"
+                      mb={2}
+                    >
+                      <Circle
+                        size="500px"
+                        bgGradient={`radial(${blue}, ${purple})`}
+                        opacity="0.1"
+                        position="absolute"
+                        top="50%"
+                        left="50%"
+                        transform="translate(-50%, -50%)"
+                        animation={`${pulse} 4s ease-in-out infinite`}
+                      />
+                      <Image
+                        src={selleneLogo}
+                        alt="Sellene Logo"
+                        w="400px"
+                        h="auto"
+                        objectFit="contain"
+                        filter="drop-shadow(0 0 40px rgba(66, 153, 225, 0.5))"
+                        position="relative"
+                        zIndex="1"
+                      />
+                    </MotionBox>
+
+                    <VStack align="start" spacing={4} w="full">
+                      <Text
+                        fontSize={{ base: "3xl", md: "4xl", lg: "5xl" }}
+                        fontWeight="bold"
+                        lineHeight="1.1"
+                        bgGradient="linear(to-r, brand.blue, brand.purple, brand.blue)"
+                        bgSize="200% auto"
+                        bgClip="text"
+                        animation={`${pulse} 8s linear infinite`}
+                      >
+                        Your Art, Your Value
+                      </Text>
+
+                      <Text
+                        fontSize={{ base: "md", md: "lg" }}
+                        color="brand.lightGray"
+                        maxW="600px"
+                        lineHeight="1.6"
+                      >
+                        Transform your creative works into valuable digital assets. Sell, trade, and earn from your art with our secure blockchain platform.
+                      </Text>
+
+                      <HStack spacing={6} pt={2}>
+                        <Button
+                          onClick={handleStartCreating}
+                          colorScheme="blue"
+                          size="lg"
+                          leftIcon={<FaRocket />}
+                          px={8}
+                        >
+                          Start Creating
+                        </Button>
+                        <Button
+                          onClick={handleLearnMore}
+                          variant="outline"
+                          size="lg"
+                          rightIcon={<FaArrowRight />}
+                          px={8}
+                        >
+                          Learn More
+                        </Button>
+                      </HStack>
+                    </VStack>
+                  </VStack>
+                </GridItem>
+
+                {/* Right Column - Feature Cards */}
+                <GridItem>
+                  <Grid 
+                    templateColumns="repeat(2, 1fr)" 
+                    gap={4}
+                    maxH="calc(100vh - 100px)"
+                    overflowY="auto"
+                    sx={{
+                      '&::-webkit-scrollbar': {
+                        width: '4px',
+                      },
+                      '&::-webkit-scrollbar-track': {
+                        width: '6px',
+                      },
+                      '&::-webkit-scrollbar-thumb': {
+                        background: 'brand.blue',
+                        borderRadius: '24px',
+                      },
+                    }}
+                  >
+                    {[
+                      {
+                        icon: FaGlobe,
+                        title: "Cross-Chain Trading",
+                        description: "Trade assets across multiple blockchains seamlessly"
+                      },
+                      {
+                        icon: FaLock,
+                        title: "Secure Storage",
+                        description: "Your digital assets are protected with advanced security"
+                      },
+                      {
+                        icon: FaPalette,
+                        title: "Sell Artworks",
+                        description: "List and sell your digital art with secure ownership"
+                      },
+                      {
+                        icon: FaCoins,
+                        title: "Earn Royalties",
+                        description: "Get paid for every resale of your artwork"
+                      },
+                      {
+                        icon: FaUsers,
+                        title: "Global Market",
+                        description: "Connect with art collectors worldwide"
+                      },
+                      {
+                        icon: FaShieldAlt,
+                        title: "Secure Rights",
+                        description: "Protect your intellectual property rights"
+                      },
+                      {
+                        icon: FaChartLine,
+                        title: "Market Analytics",
+                        description: "Track performance and market trends"
+                      },
+                      {
+                        icon: FaRocket,
+                        title: "Quick Launch",
+                        description: "Start selling your art in minutes"
+                      }
+                    ].map((feature, index) => (
+                      <MotionBox
+                        key={index}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        whileHover={{
+                          y: -4,
+                          boxShadow: '0 10px 20px rgba(66, 153, 225, 0.2)',
+                          borderColor: 'brand.blue'
+                        }}
+                        transition={{ 
+                          duration: 0.5, 
+                          delay: index * 0.1,
+                          ease: "easeOut",
+                          hover: {
+                            duration: 0.2
+                          }
+                        }}
+                        bg="brand.darkerGray"
+                        p={4}
+                        borderRadius="xl"
+                        borderWidth="1px"
+                        borderColor="brand.lightGray"
+                        h="120px"
+                      >
+                        <VStack align="start" spacing={2} h="full">
+                          <HStack spacing={2}>
+                            <Icon as={feature.icon} w={5} h={5} color="brand.blue" />
+                            <Text color="white" fontSize="md" fontWeight="bold">
+                              {feature.title}
+                            </Text>
+                          </HStack>
+                          <Text color="brand.lightGray" fontSize="sm" noOfLines={2}>
+                            {feature.description}
+                          </Text>
+                        </VStack>
+                      </MotionBox>
+                    ))}
+                  </Grid>
+                </GridItem>
+              </Grid>
+            </GridItem>
+          </Grid>
+        </Container>
+
+        {/* Simple Marquee Footer */}
+        <Box
+          position="fixed"
+          bottom="0"
+          left="0"
+          right="0"
+          bg="blackAlpha.900"
+          py={4}
+          zIndex="1000"
+          overflow="hidden"
+          whiteSpace="nowrap"
+          width="100%"
+        >
+          <Box
+            as="div"
+            animation={`${keyframes`
+              from { transform: translateX(0); }
+              to { transform: translateX(-50%); }
+            `} 35s linear infinite`}
+            display="inline-flex"
+            width="max-content"
+          >
+            <Text 
+              color="white" 
+              fontSize="xl" 
+              fontWeight="extrabold" 
+              display="inline-block" 
+              mx={8}
+              letterSpacing="wide"
+              textTransform="uppercase"
             >
-              <VStack align={{ base: 'center', md: 'start' }} spacing={6} flex={1}>
-                <MotionBox
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5 }}
-                >
-                  <Heading
-                    size="2xl"
-                    color="white"
-                    fontFamily="heading"
-                    textAlign={{ base: 'center', md: 'left' }}
-                  >
-                    Tokenize Your Creative Work
-                  </Heading>
-                  <Text
-                    fontSize="xl"
-                    color="brand.lightGray"
-                    mt={4}
-                    textAlign={{ base: 'center', md: 'left' }}
-                  >
-                    Transform your intellectual property into tradeable assets
-                  </Text>
-                </MotionBox>
-                <HStack spacing={4} justify={{ base: 'center', md: 'start' }}>
-                  <Button
-                    as={RouterLink}
-                    to="/dashboard"
-                    colorScheme="blue"
-                    size="lg"
-                    leftIcon={<FaRocket />}
-                  >
-                    Get Started
-                  </Button>
-                  <Button
-                    as={RouterLink}
-                    to="/dashboard"
-                    variant="outline"
-                    size="lg"
-                    leftIcon={<FaChartLine />}
-                  >
-                    Learn More
-                  </Button>
-                </HStack>
-              </VStack>
-              <MotionBox
-                flex={1}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.5 }}
-              >
-                <Image
-                  src="https://images.unsplash.com/photo-1639762681057-408e52192e55?w=800&auto=format&fit=crop&q=60"
-                  alt="Digital Art"
-                  rounded="lg"
-                  shadow="2xl"
-                />
-              </MotionBox>
-            </Flex>
-          </Container>
+              TRADE ART • SELL YOUR CREATIONS • BUY UNIQUE PIECES • EARN ROYALTIES • PROTECT YOUR WORK • GLOBAL MARKETPLACE • INSTANT PAYMENTS • SECURE TRANSACTIONS • VERIFIED ARTISTS • EXCLUSIVE COLLECTIONS • DIGITAL GALLERY • ARTIST COMMUNITY • CREATIVE ECONOMY • BLOCKCHAIN ART • FUTURE OF CREATIVITY
+            </Text>
+            <Text 
+              color="white" 
+              fontSize="xl" 
+              fontWeight="extrabold" 
+              display="inline-block" 
+              mx={8}
+              letterSpacing="wide"
+              textTransform="uppercase"
+            >
+              TRADE ART • SELL YOUR CREATIONS • BUY UNIQUE PIECES • EARN ROYALTIES • PROTECT YOUR WORK • GLOBAL MARKETPLACE • INSTANT PAYMENTS • SECURE TRANSACTIONS • VERIFIED ARTISTS • EXCLUSIVE COLLECTIONS • DIGITAL GALLERY • ARTIST COMMUNITY • CREATIVE ECONOMY • BLOCKCHAIN ART • FUTURE OF CREATIVITY
+            </Text>
+          </Box>
         </Box>
 
-        {/* Features Section */}
-        <Box py={20}>
-          <Container maxW="1200px">
-            <VStack spacing={12}>
-              <VStack spacing={4} textAlign="center">
-                <Heading color="white" fontFamily="heading">Why Choose Us</Heading>
-                <Text color="brand.lightGray" maxW="600px">
-                  Our platform offers unique features to help creators and investors succeed
-                </Text>
-              </VStack>
-
-              <SimpleGrid columns={{ base: 1, md: 3 }} spacing={10} w="full">
-                <Feature
-                  icon={FaLock}
-                  title="Secure IP Protection"
-                  text="Your intellectual property is protected with state-of-the-art security measures"
-                />
-                <Feature
-                  icon={FaExchangeAlt}
-                  title="Easy Trading"
-                  text="Trade your tokenized assets seamlessly on our platform"
-                />
-                <Feature
-                  icon={FaUsers}
-                  title="Growing Community"
-                  text="Join a vibrant community of creators and investors"
-                />
-              </SimpleGrid>
-            </VStack>
-          </Container>
-        </Box>
-
-        {/* CTA Section */}
-        <Box py={20} bg="brand.darkerGray">
-          <Container maxW="1200px">
-            <VStack spacing={8} textAlign="center">
-              <Heading color="white" fontFamily="heading">Ready to Get Started?</Heading>
-              <Text color="brand.lightGray" maxW="600px">
-                Join our platform today and start tokenizing your creative work
-              </Text>
-              <Button
-                as={RouterLink}
-                to="/dashboard"
-                colorScheme="blue"
-                size="lg"
-                leftIcon={<FaRocket />}
-              >
-                Launch Dashboard
-              </Button>
-            </VStack>
-          </Container>
-        </Box>
+        <TestIPRegistration />
       </Box>
     </AnimatedPage>
   )
