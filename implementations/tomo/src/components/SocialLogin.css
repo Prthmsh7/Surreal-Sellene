@@ -1,0 +1,113 @@
+.social-login {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin: 2rem 0;
+}
+
+.social-login h2 {
+    color: #333;
+    margin-bottom: 1.5rem;
+    font-size: 1.8rem;
+}
+
+.social-providers {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin: 1.5rem 0;
+}
+
+.provider-button {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.75rem 1.5rem;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 1rem;
+}
+
+.provider-button:hover {
+    background: #f8f9fa;
+    border-color: #dee2e6;
+}
+
+.provider-button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.provider-icon {
+    font-size: 1.5rem;
+}
+
+.provider-name {
+    flex: 1;
+    text-align: center;
+    font-weight: 500;
+}
+
+.social-status {
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin: 1.5rem 0;
+}
+
+.social-status.connected {
+    background: #e6f4ea;
+    border-left: 4px solid #1e7e34;
+}
+
+.social-status h3 {
+    color: #1e7e34;
+    margin: 0 0 1rem;
+    font-size: 1.4rem;
+}
+
+.user-info {
+    margin-top: 1rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 6px;
+}
+
+.address {
+    font-family: monospace;
+    background: rgba(255, 255, 255, 0.8);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.9em;
+}
+
+.social-info {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: #e3f2fd;
+    border-radius: 8px;
+    border-left: 4px solid #1976d2;
+}
+
+.social-info h3 {
+    color: #1976d2;
+    margin: 0 0 1rem;
+    font-size: 1.2rem;
+}
+
+.social-info ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.social-info li {
+    margin: 0.5rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+} 

@@ -6,11 +6,6 @@ import {
   Input,
   InputGroup,
   InputLeftElement,
-  Menu,
-  MenuButton,
-  MenuList,
-  MenuItem,
-  Icon,
   useDisclosure,
   Drawer,
   DrawerOverlay,
@@ -20,8 +15,6 @@ import {
   DrawerBody,
   VStack,
   Text,
-  List,
-  ListItem,
   Avatar,
   Badge,
   useOutsideClick,
@@ -29,13 +22,17 @@ import {
   Flex,
   Container,
   Image,
+  Icon,
 } from '@chakra-ui/react'
 import { Link as RouterLink, useLocation } from 'react-router-dom'
-import { FaSearch, FaBars, FaUserCircle, FaBell, FaCog, FaTimes } from 'react-icons/fa'
+import { FaSearch, FaBars, FaUserCircle, FaTimes } from 'react-icons/fa'
 import { useState, useRef } from 'react'
+import { useAccount } from 'wagmi'
+import { useConnectModal } from '@tomo-inc/tomo-evm-kit'
 import selleneLogo from '../assets/Sellene-logo-light.png'
+import { DeBridgeTest } from '../components/DeBridgeTest'
 
-const Navbar = () => {
+export const Navbar = () => {
   const location = useLocation()
   const { isOpen, onOpen, onClose } = useDisclosure()
   const [searchQuery, setSearchQuery] = useState('')
@@ -43,6 +40,9 @@ const Navbar = () => {
   const searchRef = useRef<HTMLDivElement>(null)
   const bgColor = useColorModeValue('brand.darkGray', 'brand.darkGray')
   const borderColor = useColorModeValue('brand.lightGray', 'brand.lightGray')
+  const { address } = useAccount()
+  const { openConnectModal } = useConnectModal()
+  const [loading, setLoading] = useState(false)
 
   // Mock search results - replace with actual API call
   const searchResults = [
@@ -71,11 +71,10 @@ const Navbar = () => {
 
   const navItems = [
     { name: 'Dashboard', path: '/dashboard' },
-    { name: 'Creators Studio', path: '/studio' },
-    { name: 'Gallery', path: '/gallery' },
+    { name: 'About', path: '/about' },
     { name: 'Marketplace', path: '/marketplace' },
     { name: 'Developers', path: '/developers' },
-    { name: 'About', path: '/about' },
+    { name: 'DeBridge Test', path: '/debridge-test' },
   ]
 
   const isActive = (path: string) => {
@@ -83,7 +82,7 @@ const Navbar = () => {
   }
 
   useOutsideClick({
-    ref: searchRef,
+    ref: searchRef as React.RefObject<HTMLElement>,
     handler: () => setIsSearchFocused(false),
   })
 
@@ -94,6 +93,21 @@ const Navbar = () => {
   const clearSearch = () => {
     setSearchQuery('')
   }
+
+  const handleAuth = async () => {
+    try {
+      setLoading(true)
+      if (openConnectModal) {
+        await openConnectModal()
+      }
+    } catch (error) {
+      console.error('Auth error:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const displayAddress = address ? `${address.slice(0, 6)}...${address.slice(-4)}` : 'Connect'
 
   return (
     <Box
@@ -182,26 +196,21 @@ const Navbar = () => {
                 boxShadow="xl"
                 maxH="400px"
                 overflowY="auto"
+                zIndex={1000}
               >
-                <List spacing={0}>
+                <VStack spacing={0} align="stretch">
                   {searchResults.map((result, index) => (
-                    <ListItem
+                    <Box
                       key={index}
                       p={3}
                       _hover={{ bg: 'brand.darkerGray' }}
                       cursor="pointer"
-                      borderBottom={index !== searchResults.length - 1 ? '1px' : 'none'}
-                      borderColor={borderColor}
                     >
                       <HStack spacing={3}>
-                        <Avatar
-                          size="sm"
-                          name={result.name}
-                          src={result.avatar}
-                        />
-                        <VStack align="start" spacing={0} flex={1}>
-                          <HStack spacing={2}>
-                            <Text color="white" fontWeight="medium">
+                        <Avatar size="sm" src={result.avatar} />
+                        <Box flex={1}>
+                          <HStack>
+                            <Text fontWeight="medium" color="white">
                               {result.name}
                             </Text>
                             <Badge
@@ -209,109 +218,67 @@ const Navbar = () => {
                                 result.badge === 'Verified'
                                   ? 'green'
                                   : result.badge === 'Popular'
-                                  ? 'blue'
-                                  : 'purple'
+                                  ? 'purple'
+                                  : 'blue'
                               }
                               fontSize="xs"
                             >
                               {result.badge}
                             </Badge>
                           </HStack>
-                          <Text color="brand.lightGray" fontSize="sm">
+                          <Text fontSize="sm" color="brand.lightGray">
                             {result.description}
                           </Text>
-                        </VStack>
+                        </Box>
                       </HStack>
-                    </ListItem>
+                    </Box>
                   ))}
-                </List>
+                </VStack>
               </Box>
             )}
           </Box>
 
-          {/* Right Section - Navigation & Actions */}
-          <HStack spacing={6} align="center">
+          {/* Right Section - Navigation & Auth */}
+          <HStack spacing={4}>
             {/* Desktop Navigation */}
-            <HStack spacing={6} display={{ base: 'none', lg: 'flex' }}>
+            <HStack
+              spacing={6}
+              display={{ base: 'none', lg: 'flex' }}
+            >
               {navItems.map((item) => (
-                <Button
-                  key={item.path}
-                  as={RouterLink}
-                  to={item.path}
-                  variant="ghost"
-                  color={isActive(item.path) ? 'brand.blue' : 'white'}
-                  _hover={{
-                    bg: 'brand.darkerGray',
-                    color: 'brand.blue',
-                  }}
-                  px={3}
-                  h="44px"
-                >
-                  {item.name}
-                </Button>
+                <RouterLink key={item.path} to={item.path}>
+                  <Text
+                    color={isActive(item.path) ? 'white' : 'brand.lightGray'}
+                    fontWeight={isActive(item.path) ? 'bold' : 'normal'}
+                    _hover={{ color: 'white' }}
+                  >
+                    {item.name}
+                  </Text>
+                </RouterLink>
               ))}
             </HStack>
 
-            {/* Right Side Actions */}
-            <HStack spacing={4}>
-              <Button
-                variant="ghost"
-                color="white"
-                _hover={{ bg: 'brand.darkerGray' }}
-                display={{ base: 'none', md: 'flex' }}
-                h="44px"
-                w="44px"
-                p={0}
-              >
-                <Icon as={FaBell} boxSize={5} />
-              </Button>
+            {/* Auth Button */}
+            <Button
+              onClick={handleAuth}
+              isLoading={loading}
+              leftIcon={<Icon as={FaUserCircle} />}
+              variant="outline"
+              colorScheme="blue"
+              size="md"
+            >
+              {displayAddress}
+            </Button>
 
-              <Menu>
-                <MenuButton
-                  as={Button}
-                  variant="ghost"
-                  color="white"
-                  _hover={{ bg: 'brand.darkerGray' }}
-                  h="44px"
-                  w="44px"
-                  p={0}
-                >
-                  <Icon as={FaUserCircle} boxSize={6} />
-                </MenuButton>
-                <MenuList bg={bgColor} borderColor={borderColor}>
-                  <MenuItem
-                    as={RouterLink}
-                    to="/profile"
-                    _hover={{ bg: 'brand.darkerGray' }}
-                    color="white"
-                  >
-                    Profile
-                  </MenuItem>
-                  <MenuItem
-                    as={RouterLink}
-                    to="/settings"
-                    _hover={{ bg: 'brand.darkerGray' }}
-                    color="white"
-                  >
-                    Settings
-                  </MenuItem>
-                </MenuList>
-              </Menu>
-
-              {/* Mobile Menu Button */}
-              <Button
-                variant="ghost"
-                color="white"
-                _hover={{ bg: 'brand.darkerGray' }}
-                display={{ base: 'flex', lg: 'none' }}
-                onClick={onOpen}
-                h="44px"
-                w="44px"
-                p={0}
-              >
-                <Icon as={FaBars} boxSize={5} />
-              </Button>
-            </HStack>
+            {/* Mobile Menu Button */}
+            <Button
+              display={{ base: 'flex', lg: 'none' }}
+              variant="ghost"
+              onClick={onOpen}
+              p={0}
+            >
+              <Icon as={FaBars} boxSize={6} color="white" />
+            </Button>
           </HStack>
         </Flex>
       </Container>
@@ -319,27 +286,23 @@ const Navbar = () => {
       {/* Mobile Drawer */}
       <Drawer isOpen={isOpen} placement="right" onClose={onClose}>
         <DrawerOverlay />
-        <DrawerContent bg={bgColor} borderLeft="1px" borderColor={borderColor}>
+        <DrawerContent bg={bgColor}>
           <DrawerCloseButton color="white" />
-          <DrawerHeader color="white">Menu</DrawerHeader>
+          <DrawerHeader borderBottomWidth="1px" borderColor={borderColor}>
+            Menu
+          </DrawerHeader>
           <DrawerBody>
             <VStack spacing={4} align="stretch">
               {navItems.map((item) => (
-                <Button
-                  key={item.path}
-                  as={RouterLink}
-                  to={item.path}
-                  variant="ghost"
-                  color={isActive(item.path) ? 'brand.blue' : 'white'}
-                  _hover={{
-                    bg: 'brand.darkerGray',
-                    color: 'brand.blue',
-                  }}
-                  onClick={onClose}
-                  h="44px"
-                >
-                  {item.name}
-                </Button>
+                <RouterLink key={item.path} to={item.path} onClick={onClose}>
+                  <Text
+                    color={isActive(item.path) ? 'white' : 'brand.lightGray'}
+                    fontWeight={isActive(item.path) ? 'bold' : 'normal'}
+                    _hover={{ color: 'white' }}
+                  >
+                    {item.name}
+                  </Text>
+                </RouterLink>
               ))}
             </VStack>
           </DrawerBody>
@@ -347,6 +310,4 @@ const Navbar = () => {
       </Drawer>
     </Box>
   )
-}
-
-export default Navbar 
+} 
