@@ -83,6 +83,7 @@ export const Navbar = () => {
     { name: 'About', path: '/about' },
     { name: 'Marketplace', path: '/marketplace' },
     { name: 'Developers', path: '/developers' },
+    { name: 'Register IP', path: '/register-ip' },
     { name: 'DeBridge Test', path: '/debridge-test' },
   ]
 

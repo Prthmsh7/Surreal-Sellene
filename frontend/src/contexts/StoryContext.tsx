@@ -13,6 +13,24 @@ interface IP {
   }>;
 }
 
+interface StoryContextType {
+  loading: boolean;
+  error: string | null;
+  registeredIPs: Array<{ ipId: string; title: string; description: string }>;
+  refreshIPs: () => Promise<void>;
+  registerIP: (title: string, description: string, mediaUrl: string) => Promise<string>;
+}
+
+const defaultContext: StoryContextType = {
+  loading: false,
+  error: null,
+  registeredIPs: [],
+  refreshIPs: async () => {},
+  registerIP: async () => ''
+};
+
+const StoryContext = createContext<StoryContextType>(defaultContext);
+
 export function StoryProvider({ children }: { children: React.ReactNode }) {
   const { address } = useAuth();
   const [loading, setLoading] = useState(false);
@@ -58,12 +76,18 @@ export function StoryProvider({ children }: { children: React.ReactNode }) {
       setLoading(true);
       setError(null);
 
-      // Format IP ID based on wallet address
-      const ipId = `story:${address.toLowerCase()}`;
+      // Format IP ID based on wallet address and timestamp
+      const timestamp = Date.now();
+      const ipId = `story:${address.toLowerCase()}:${timestamp}`;
       
-      // For now, we'll just return the IP ID
-      // In a real implementation, this would interact with the Story Protocol smart contract
-      await refreshIPs();
+      // Add the new IP to the list
+      const newIP = {
+        ipId,
+        title,
+        description
+      };
+      
+      setRegisteredIPs(prev => [...prev, newIP]);
       return ipId;
 
     } catch (err) {
@@ -76,7 +100,7 @@ export function StoryProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  const value = {
+  const value: StoryContextType = {
     loading,
     error,
     registeredIPs,
@@ -91,18 +115,10 @@ export function StoryProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
-const StoryContext = createContext<{
-  loading: boolean;
-  error: string | null;
-  registeredIPs: Array<{ ipId: string; title: string; description: string }>;
-  refreshIPs: () => Promise<void>;
-  registerIP: (title: string, description: string, mediaUrl: string) => Promise<string>;
-}>({
-  loading: false,
-  error: null,
-  registeredIPs: [],
-  refreshIPs: async () => {},
-  registerIP: async () => ''
-});
-
-export const useStory = () => useContext(StoryContext); 
+export const useStory = () => {
+  const context = useContext(StoryContext);
+  if (context === undefined) {
+    throw new Error('useStory must be used within a StoryProvider');
+  }
+  return context;
+}; 

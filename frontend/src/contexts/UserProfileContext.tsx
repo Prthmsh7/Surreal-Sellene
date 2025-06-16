@@ -30,7 +30,15 @@ interface UserProfileContextType {
   uploadProfilePicture: (file: File) => Promise<void>;
 }
 
-const UserProfileContext = createContext<UserProfileContextType | undefined>(undefined);
+const defaultContext: UserProfileContextType = {
+  profile: null,
+  loading: false,
+  error: null,
+  updateProfile: async () => {},
+  uploadProfilePicture: async () => {},
+};
+
+const UserProfileContext = createContext<UserProfileContextType>(defaultContext);
 
 export function UserProfileProvider({ children }: { children: React.ReactNode }) {
   const { address } = useAuth();

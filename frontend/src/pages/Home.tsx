@@ -32,6 +32,7 @@ import {
 import AnimatedPage from '../components/AnimatedPage'
 import selleneLogo from '../assets/Sellene-logo-light.png'
 import { Link as RouterLink, useNavigate } from 'react-router-dom'
+import { useAccount } from 'wagmi'
 
 const MotionBox = motion(Box)
 
@@ -55,17 +56,22 @@ const rotate = keyframes`
 const Home = () => {
   const navigate = useNavigate()
   const toast = useToast()
+  const { address } = useAccount()
   const bgColor = useColorModeValue('brand.darkGray', 'brand.darkGray')
   const [blue, purple] = useToken('colors', ['brand.blue', 'brand.purple'])
 
   const handleStartCreating = () => {
-    toast({
-      title: "Connect Wallet",
-      description: "Please connect your wallet to start creating and exploring masterpieces",
-      status: "info",
-      duration: 5000,
-      isClosable: true,
-    })
+    if (!address) {
+      toast({
+        title: "Connect Wallet",
+        description: "Please connect your wallet to start creating and exploring masterpieces",
+        status: "info",
+        duration: 5000,
+        isClosable: true,
+      })
+    } else {
+      navigate('/register-ip')
+    }
   }
 
   const handleLearnMore = () => {

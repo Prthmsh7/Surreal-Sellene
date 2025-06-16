@@ -248,28 +248,6 @@ const Profile = () => {
                       >
                         Browse Marketplace
                       </Button>
-                      <Button
-                        leftIcon={<FaHistory />}
-                        colorScheme="blue"
-                        variant="outline"
-                        size="sm"
-                        w="full"
-                        as="a"
-                        href="/dashboard"
-                      >
-                        View Dashboard
-                      </Button>
-                      <Button
-                        leftIcon={<FaStar />}
-                        colorScheme="blue"
-                        variant="outline"
-                        size="sm"
-                        w="full"
-                        as="a"
-                        href="/register-ip"
-                      >
-                        Register New IP
-                      </Button>
                     </VStack>
                   </CardBody>
                 </Card>
