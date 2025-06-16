@@ -12,8 +12,18 @@ import {
   Code,
   useColorModeValue,
   Link,
+  BoxProps,
+  VStackProps,
+  HStackProps,
+  TextProps,
+  HeadingProps,
+  ButtonProps,
+  IconProps,
+  BadgeProps,
+  CodeProps,
+  LinkProps,
 } from '@chakra-ui/react'
-import { motion } from 'framer-motion'
+import { motion, HTMLMotionProps } from 'framer-motion'
 import { Link as RouterLink } from 'react-router-dom'
 import {
   FaRocket,
@@ -32,13 +42,36 @@ import AnimatedPage from '../components/AnimatedPage'
 import MarqueeMenu from '../components/MarqueeMenu'
 import '../components/MarqueeMenu.css'
 
-const MotionBox = motion(Box)
+type MotionBoxProps = HTMLMotionProps<"div"> & BoxProps
+
+const MotionBox = motion(Box) as React.ComponentType<MotionBoxProps>
+
+interface Resource {
+  title: string
+  description: string
+  icon: React.ComponentType<IconProps>
+  link: string
+  badge?: string
+}
+
+interface StatCardProps {
+  icon: React.ComponentType<IconProps>
+  label: string
+  value: string
+  helpText: string
+}
+
+interface SecurityCardProps {
+  icon: React.ComponentType<IconProps>
+  title: string
+  description: string
+}
 
 const Developers = () => {
   const bgColor = useColorModeValue('brand.darkerGray', 'brand.darkerGray')
   const borderColor = useColorModeValue('brand.lightGray', 'brand.lightGray')
 
-  const resources = [
+  const resources: Resource[] = [
     {
       title: 'API Documentation',
       description: 'Comprehensive guide to our REST API endpoints and authentication',
@@ -316,7 +349,7 @@ const Developers = () => {
   )
 }
 
-const StatCard = ({ icon, label, value, helpText }: { icon: any; label: string; value: string; helpText: string }) => (
+const StatCard: React.FC<StatCardProps> = ({ icon, label, value, helpText }) => (
   <Box
     bg={useColorModeValue('brand.darkerGray', 'brand.darkerGray')}
     p={6}
@@ -333,7 +366,7 @@ const StatCard = ({ icon, label, value, helpText }: { icon: any; label: string; 
   </Box>
 )
 
-const SecurityCard = ({ icon, title, description }: { icon: any; title: string; description: string }) => (
+const SecurityCard: React.FC<SecurityCardProps> = ({ icon, title, description }) => (
   <Box
     bg={useColorModeValue('brand.darkerGray', 'brand.darkerGray')}
     p={6}
