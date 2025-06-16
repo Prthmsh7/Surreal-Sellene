@@ -5,9 +5,6 @@ import {
   Text,
   Link,
   useColorModeValue,
-  useBreakpointValue,
-  Collapse,
-  useDisclosure,
   Button,
   Divider,
 } from '@chakra-ui/react'
@@ -24,12 +21,14 @@ import { motion } from 'framer-motion'
 
 const MotionBox = motion(Box)
 
-const Sidebar = () => {
+interface SidebarProps {
+  onClose?: () => void
+}
+
+const Sidebar = ({ onClose }: SidebarProps) => {
   const location = useLocation()
   const bgColor = useColorModeValue('brand.darkGray', 'brand.darkGray')
   const borderColor = useColorModeValue('brand.lightGray', 'brand.lightGray')
-  const isMobile = useBreakpointValue({ base: true, md: false })
-  const { isOpen, onToggle } = useDisclosure()
 
   const navItems = [
     {
@@ -69,20 +68,31 @@ const Sidebar = () => {
     },
   ]
 
+  const handleClick = (path: string | null) => {
+    if (path && onClose) {
+      onClose()
+    }
+  }
+
   return (
     <Box
       as="nav"
-      position="fixed"
-      left={0}
-      top={0}
-      bottom={0}
-      w={{ base: "full", md: "240px" }}
+      h="calc(100vh - 80px)"
       bg={bgColor}
-      borderRight="1px"
-      borderColor={borderColor}
       py={4}
-      zIndex="sticky"
-      display={{ base: isOpen ? "block" : "none", md: "block" }}
+      overflowY="auto"
+      css={{
+        '&::-webkit-scrollbar': {
+          width: '4px',
+        },
+        '&::-webkit-scrollbar-track': {
+          width: '6px',
+        },
+        '&::-webkit-scrollbar-thumb': {
+          background: 'brand.lightGray',
+          borderRadius: '24px',
+        },
+      }}
     >
       <VStack spacing={2} align="stretch" px={4}>
         {navItems.map((item, index) => {
@@ -110,6 +120,7 @@ const Sidebar = () => {
               as={RouterLink}
               to={item.path}
               _hover={{ textDecoration: 'none' }}
+              onClick={() => handleClick(item.path)}
             >
               <MotionBox
                 whileHover={{ x: 4 }}
@@ -126,6 +137,7 @@ const Sidebar = () => {
                     bg: 'whiteAlpha.200',
                   }}
                   size="lg"
+                  px={4}
                 >
                   <Text>{item.label}</Text>
                 </Button>

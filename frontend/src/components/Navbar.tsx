@@ -23,6 +23,12 @@ import {
   Container,
   Image,
   Icon,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  useBreakpointValue,
+  IconButton,
 } from '@chakra-ui/react'
 import { Link as RouterLink, useLocation } from 'react-router-dom'
 import { FaSearch, FaBars, FaUserCircle, FaTimes } from 'react-icons/fa'
@@ -31,6 +37,9 @@ import { useAccount } from 'wagmi'
 import { useConnectModal } from '@tomo-inc/tomo-evm-kit'
 import selleneLogo from '../assets/Sellene-logo-light.png'
 import { DeBridgeTest } from '../components/DeBridgeTest'
+import { motion } from 'framer-motion'
+
+const MotionBox = motion(Box)
 
 export const Navbar = () => {
   const location = useLocation()
@@ -43,6 +52,7 @@ export const Navbar = () => {
   const { address } = useAccount()
   const { openConnectModal } = useConnectModal()
   const [loading, setLoading] = useState(false)
+  const isMobile = useBreakpointValue({ base: true, md: false })
 
   // Mock search results - replace with actual API call
   const searchResults = [
@@ -113,6 +123,9 @@ export const Navbar = () => {
     <Box
       as="nav"
       position="fixed"
+      top={0}
+      left={0}
+      right={0}
       w="full"
       h="80px"
       bg={bgColor}
@@ -120,25 +133,35 @@ export const Navbar = () => {
       borderColor={borderColor}
       zIndex={1000}
     >
-      <Container maxW="1400px" h="full">
+      <Container maxW="1400px" h="full" px={4}>
         <Flex h="full" align="center" justify="space-between">
-          {/* Left Section - Logo */}
-          <Box flex="0 0 auto">
+          {/* Left Section - Logo and Mobile Menu */}
+          <HStack spacing={4}>
+            <Icon
+              as={FaBars}
+              display={{ base: 'block', md: 'none' }}
+              color="white"
+              w={6}
+              h={6}
+              cursor="pointer"
+              onClick={onOpen}
+            />
             <RouterLink to="/">
               <HStack spacing={2}>
-                <Image src={selleneLogo} h="60px" alt="Sellene Logo" />
+                <Image src={selleneLogo} h="40px" alt="Sellene Logo" />
                 <Text
-                  fontSize="2xl"
+                  fontSize="xl"
                   fontWeight="bold"
                   color="white"
                   fontFamily="heading"
                   letterSpacing="tight"
+                  display={{ base: 'none', sm: 'block' }}
                 >
                   Sellene
                 </Text>
               </HStack>
             </RouterLink>
-          </Box>
+          </HStack>
 
           {/* Center Section - Search */}
           <Box
@@ -238,67 +261,70 @@ export const Navbar = () => {
             )}
           </Box>
 
-          {/* Right Section - Navigation & Auth */}
-          <HStack spacing={4}>
-            {/* Desktop Navigation */}
-            <HStack
-              spacing={6}
-              display={{ base: 'none', lg: 'flex' }}
-            >
-              {navItems.map((item) => (
-                <RouterLink key={item.path} to={item.path}>
-                  <Text
-                    color={isActive(item.path) ? 'white' : 'brand.lightGray'}
-                    fontWeight={isActive(item.path) ? 'bold' : 'normal'}
-                    _hover={{ color: 'white' }}
-                  >
-                    {item.name}
-                  </Text>
-                </RouterLink>
-              ))}
-            </HStack>
-
-            {/* Auth Button */}
+          {/* Right Section - Navigation and Connect */}
+          <HStack spacing={4} display={{ base: 'none', md: 'flex' }}>
+            {navItems.map((item) => (
+              <RouterLink key={item.path} to={item.path}>
+                <Text
+                  color={isActive(item.path) ? 'white' : 'brand.lightGray'}
+                  _hover={{ color: 'white' }}
+                  fontWeight={isActive(item.path) ? 'bold' : 'normal'}
+                >
+                  {item.name}
+                </Text>
+              </RouterLink>
+            ))}
             <Button
               onClick={handleAuth}
               isLoading={loading}
-              leftIcon={<Icon as={FaUserCircle} />}
-              variant="outline"
-              colorScheme="blue"
-              size="md"
+              bg="brand.blue"
+              color="white"
+              _hover={{ bg: 'brand.blueHover' }}
+              borderRadius="full"
+              px={6}
             >
               {displayAddress}
             </Button>
-
-            {/* Mobile Menu Button */}
-            <Button
-              display={{ base: 'flex', lg: 'none' }}
-              variant="ghost"
-              onClick={onOpen}
-              p={0}
-            >
-              <Icon as={FaBars} boxSize={6} color="white" />
-            </Button>
           </HStack>
+
+          {/* Mobile Connect Button */}
+          <Button
+            display={{ base: 'flex', md: 'none' }}
+            onClick={handleAuth}
+            isLoading={loading}
+            bg="brand.blue"
+            color="white"
+            _hover={{ bg: 'brand.blueHover' }}
+            borderRadius="full"
+            px={4}
+          >
+            {displayAddress}
+          </Button>
         </Flex>
       </Container>
 
-      {/* Mobile Drawer */}
-      <Drawer isOpen={isOpen} placement="right" onClose={onClose}>
+      {/* Mobile Menu Drawer */}
+      <Drawer isOpen={isOpen} placement="left" onClose={onClose}>
         <DrawerOverlay />
         <DrawerContent bg={bgColor}>
           <DrawerCloseButton color="white" />
           <DrawerHeader borderBottomWidth="1px" borderColor={borderColor}>
-            Menu
+            <HStack spacing={2}>
+              <Image src={selleneLogo} h="40px" alt="Sellene Logo" />
+              <Text color="white" fontSize="xl" fontWeight="bold">
+                Sellene
+              </Text>
+            </HStack>
           </DrawerHeader>
           <DrawerBody>
-            <VStack spacing={4} align="stretch">
+            <VStack spacing={4} align="stretch" mt={4}>
               {navItems.map((item) => (
                 <RouterLink key={item.path} to={item.path} onClick={onClose}>
                   <Text
                     color={isActive(item.path) ? 'white' : 'brand.lightGray'}
-                    fontWeight={isActive(item.path) ? 'bold' : 'normal'}
                     _hover={{ color: 'white' }}
+                    fontWeight={isActive(item.path) ? 'bold' : 'normal'}
+                    py={2}
                   >
                     {item.name}
                   </Text>
