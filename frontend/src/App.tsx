@@ -6,6 +6,7 @@ import { Navbar } from './components/Navbar'
 import { AuthProvider } from './contexts/AuthContext'
 import { StoryProvider } from './contexts/StoryContext'
 import { DeBridgeProvider } from './contexts/DeBridgeContext'
+import { UserProfileProvider } from './contexts/UserProfileContext'
 import { Toaster } from 'react-hot-toast'
 import { WagmiConfig } from 'wagmi'
 import { config } from './config/wagmi'
@@ -55,40 +56,42 @@ function App() {
         <AuthProvider>
           <StoryProvider>
             <DeBridgeProvider>
-              <Router future={router.future}>
-                <div className="min-h-screen bg-gradient-to-br from-purple-900 via-indigo-900 to-blue-900">
-                  <Navbar />
-                  <main className="container mx-auto px-4 py-8">
-                    <Suspense fallback={<LoadingSpinner />}>
-                      <Routes>
-                        {/* Public Routes */}
-                        <Route path="/" element={<Home />} />
-                        <Route path="/about" element={<About />} />
-                        <Route path="/marketplace" element={<Marketplace />} />
-                        <Route path="/developers" element={<Developers />} />
-                        <Route path="/profile" element={<Profile />} />
-                        <Route path="/register-ip" element={<StoryIPRegistration />} />
-                        <Route path="/auth" element={<SecureAuth />} />
-                        <Route path="/debridge-test" element={<DeBridgeTestPage />} />
+              <UserProfileProvider>
+                <Router future={router.future}>
+                  <div className="min-h-screen bg-gradient-to-br from-purple-900 via-indigo-900 to-blue-900">
+                    <Navbar />
+                    <main className="container mx-auto px-4 py-8">
+                      <Suspense fallback={<LoadingSpinner />}>
+                        <Routes>
+                          {/* Public Routes */}
+                          <Route path="/" element={<Home />} />
+                          <Route path="/about" element={<About />} />
+                          <Route path="/marketplace" element={<Marketplace />} />
+                          <Route path="/developers" element={<Developers />} />
+                          <Route path="/profile" element={<Profile />} />
+                          <Route path="/register-ip" element={<StoryIPRegistration />} />
+                          <Route path="/auth" element={<SecureAuth />} />
+                          <Route path="/debridge-test" element={<DeBridgeTestPage />} />
 
-                        {/* Dashboard Routes */}
-                        <Route path="/dashboard" element={<DashboardLayout />}>
-                          <Route index element={<Navigate to="/dashboard/overview" replace />} />
-                          <Route path="overview" element={<Overview />} />
-                          <Route path="geography" element={<Geography />} />
-                          <Route path="monthly" element={<Monthly />} />
-                          <Route path="breakdown" element={<Breakdown />} />
-                          <Route path="daily" element={<Daily />} />
-                        </Route>
+                          {/* Dashboard Routes */}
+                          <Route path="/dashboard" element={<DashboardLayout />}>
+                            <Route index element={<Navigate to="/dashboard/overview" replace />} />
+                            <Route path="overview" element={<Overview />} />
+                            <Route path="geography" element={<Geography />} />
+                            <Route path="monthly" element={<Monthly />} />
+                            <Route path="breakdown" element={<Breakdown />} />
+                            <Route path="daily" element={<Daily />} />
+                          </Route>
 
-                        {/* Redirects */}
-                        <Route path="*" element={<Navigate to="/" replace />} />
-                      </Routes>
-                    </Suspense>
-                  </main>
-                  <Toaster position="top-right" />
-                </div>
-              </Router>
+                          {/* Redirects */}
+                          <Route path="*" element={<Navigate to="/" replace />} />
+                        </Routes>
+                      </Suspense>
+                    </main>
+                    <Toaster position="bottom-right" />
+                  </div>
+                </Router>
+              </UserProfileProvider>
             </DeBridgeProvider>
           </StoryProvider>
         </AuthProvider>
