@@ -8,16 +8,13 @@ export default defineConfig({
   plugins: [
     react(),
     nodePolyfills({
-      include: ['buffer', 'process', 'util', 'stream', 'crypto', 'path', 'fs'],
+      include: ['buffer', 'process', 'util', 'stream', 'crypto', 'path'],
       globals: {
         Buffer: true,
         global: true,
         process: true,
       },
       protocolImports: true,
-      overrides: {
-        fs: 'memfs',
-      },
     }),
   ],
   resolve: {
@@ -29,7 +26,6 @@ export default defineConfig({
       buffer: 'buffer',
       asset: 'assert',
       path: 'path-browserify',
-      fs: 'memfs',
     },
   },
   define: {
@@ -51,9 +47,6 @@ export default defineConfig({
       'path-browserify',
       'browserify-sign',
       'readable-stream',
-      'browserify-fs',
-      'fs',
-      'memfs',
     ],
   },
   build: {
