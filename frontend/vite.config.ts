@@ -8,13 +8,16 @@ export default defineConfig({
   plugins: [
     react(),
     nodePolyfills({
-      include: ['buffer', 'process', 'util', 'stream', 'crypto', 'path'],
+      include: ['buffer', 'process', 'util', 'stream', 'crypto', 'path', 'fs'],
       globals: {
         Buffer: true,
         global: true,
         process: true,
       },
       protocolImports: true,
+      overrides: {
+        fs: 'memfs',
+      },
     }),
   ],
   resolve: {
@@ -26,6 +29,7 @@ export default defineConfig({
       buffer: 'buffer',
       asset: 'assert',
       path: 'path-browserify',
+      fs: 'memfs',
     },
   },
   define: {
@@ -48,6 +52,8 @@ export default defineConfig({
       'browserify-sign',
       'readable-stream',
       'browserify-fs',
+      'fs',
+      'memfs',
     ],
   },
   build: {
@@ -71,12 +77,13 @@ export default defineConfig({
     port: 3000,
     cors: true,
     headers: {
-      'Cross-Origin-Embedder-Policy': 'require-corp',
+      'Cross-Origin-Embedder-Policy': 'credentialless',
       'Cross-Origin-Opener-Policy': 'same-origin',
       'Cross-Origin-Resource-Policy': 'cross-origin',
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
-      'Access-Control-Allow-Headers': 'X-Requested-With, content-type, Authorization'
+      'Access-Control-Allow-Headers': 'X-Requested-With, content-type, Authorization',
+      'Access-Control-Allow-Credentials': 'true'
     }
   },
 })

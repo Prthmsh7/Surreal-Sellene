@@ -5,25 +5,38 @@ declare module '@chakra-ui/react' {
     children?: ReactNode;
     maxW?: string;
     mx?: string;
-    p?: number | string;
+    py?: number | string;
     mt?: number | string;
     mb?: number | string;
     borderWidth?: number | string;
     borderRadius?: string;
     overflow?: string;
+    position?: string;
+    w?: string;
+    h?: string;
+    bg?: string;
+    left?: string;
+    top?: string;
+    transition?: string;
   }
 
   export interface ButtonProps {
     children?: ReactNode;
     type?: 'button' | 'submit' | 'reset';
     colorScheme?: string;
+    variant?: string;
+    size?: string;
+    width?: string;
+    height?: string;
+    display?: string;
+    flexDirection?: string;
+    gap?: number | string;
+    cursor?: string;
     isLoading?: boolean;
     loadingText?: string;
-    w?: string;
-    h?: string;
-    p?: number | string;
-    variant?: 'solid' | 'outline';
     onClick?: () => void;
+    as?: string;
+    htmlFor?: string;
   }
 
   export interface FormControlProps {
@@ -39,22 +52,25 @@ declare module '@chakra-ui/react' {
     value?: string;
     onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
     placeholder?: string;
+    bg?: string;
+    borderColor?: string;
+    color?: string;
+    _hover?: any;
+    _focus?: any;
     type?: string;
-    accept?: string;
+    display?: string;
+    id?: string;
   }
 
   export interface TextareaProps {
     value?: string;
     onChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
     placeholder?: string;
-  }
-
-  export interface ImageProps {
-    src?: string;
-    alt?: string;
-    maxH?: string;
-    objectFit?: string;
-    mb?: number | string;
+    bg?: string;
+    borderColor?: string;
+    color?: string;
+    _hover?: any;
+    _focus?: any;
   }
 
   export interface TextProps {
@@ -84,7 +100,6 @@ declare module '@chakra-ui/react' {
 
   export interface GridItemProps {
     children?: ReactNode;
-    key?: string;
   }
 
   export interface IconProps {
@@ -92,8 +107,11 @@ declare module '@chakra-ui/react' {
     boxSize?: number | string;
   }
 
-  export interface FlexProps {
-    children?: ReactNode;
+  export interface ImageProps {
+    src?: string;
+    alt?: string;
+    maxH?: string;
+    objectFit?: string;
   }
 
   export interface HeadingProps {
@@ -102,25 +120,7 @@ declare module '@chakra-ui/react' {
     mb?: number | string;
   }
 
-  export interface SimpleGridProps {
-    children?: ReactNode;
-    columns?: Record<string, number>;
-    spacing?: number | string;
-  }
-
   export interface CardProps {
-    children?: ReactNode;
-  }
-
-  export interface CardBodyProps {
-    children?: ReactNode;
-  }
-
-  export interface CardHeaderProps {
-    children?: ReactNode;
-  }
-
-  export interface DividerProps {
     children?: ReactNode;
   }
 
@@ -131,20 +131,11 @@ declare module '@chakra-ui/react' {
   export interface CenterProps {
     children?: ReactNode;
     p?: number | string;
+    minH?: string;
   }
 
   export interface SelectProps {
-    value?: string;
-    onChange?: (e: React.ChangeEvent<HTMLSelectElement>) => void;
     children?: ReactNode;
-  }
-
-  export interface ToastProps {
-    title: string;
-    description: string;
-    status: 'success' | 'error';
-    duration: number;
-    isClosable: boolean;
   }
 
   export const Box: ComponentType<BoxProps>;
@@ -153,21 +144,17 @@ declare module '@chakra-ui/react' {
   export const FormLabel: ComponentType<FormLabelProps>;
   export const Input: ComponentType<InputProps>;
   export const Textarea: ComponentType<TextareaProps>;
-  export const Image: ComponentType<ImageProps>;
   export const Text: ComponentType<TextProps>;
   export const VStack: ComponentType<VStackProps>;
   export const Grid: ComponentType<GridProps>;
   export const GridItem: ComponentType<GridItemProps>;
   export const Icon: ComponentType<IconProps>;
-  export const Flex: ComponentType<FlexProps>;
+  export const Image: ComponentType<ImageProps>;
   export const Heading: ComponentType<HeadingProps>;
-  export const SimpleGrid: ComponentType<SimpleGridProps>;
   export const Card: ComponentType<CardProps>;
-  export const CardBody: ComponentType<CardBodyProps>;
-  export const CardHeader: ComponentType<CardHeaderProps>;
-  export const Divider: ComponentType<DividerProps>;
   export const Spinner: ComponentType<SpinnerProps>;
   export const Center: ComponentType<CenterProps>;
   export const Select: ComponentType<SelectProps>;
-  export const useToast: () => (props: ToastProps) => void;
+
+  export const useToast: () => any;
 } 

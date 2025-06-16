@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, ChangeEvent, FormEvent } from 'react';
 import {
   Box,
@@ -13,53 +15,45 @@ import {
   Icon,
   Grid,
   GridItem,
+  Center,
 } from '@chakra-ui/react';
-import { useStoryProtocol } from '../providers/StoryProtocolProvider';
 import { FiFile, FiImage, FiMusic, FiPenTool, FiType } from 'react-icons/fi';
-import { uploadToIPFS, validateFile, generateMetadata } from '../utils/ipfs';
-import type { IconType } from 'react-icons';
+import { useAccount } from 'wagmi';
+import { useStoryProtocolHook } from '../hooks/useStoryProtocol';
 
 type AssetType = 'text' | 'image' | 'music' | 'art' | 'writing';
 
-interface AssetTypeOption {
-  value: AssetType;
-  label: string;
-  icon: IconType;
-}
-
-const ASSET_TYPES: AssetTypeOption[] = [
+const assetTypes = [
   { value: 'text', label: 'Text', icon: FiType },
   { value: 'image', label: 'Image', icon: FiImage },
   { value: 'music', label: 'Music', icon: FiMusic },
   { value: 'art', label: 'Art', icon: FiPenTool },
-  { value: 'writing', label: 'Writing', icon: FiFile },
+  { value: 'writing', label: 'Writing', icon: FiType },
 ];
 
-export function StoryIPRegistration(): JSX.Element {
-  const { registerIP, isLoading, error } = useStoryProtocol();
+export function StoryIPRegistration() {
+  const { address } = useAccount();
+  const { registerNewIP, loading: isClientLoading, error: clientError } = useStoryProtocolHook();
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [type, setType] = useState<AssetType>('text');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+  const [isUploading, setIsUploading] = useState(false);
   const toast = useToast();
 
-  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files?.[0];
-    if (selectedFile) {
+  const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const selectedFile = e.target.files[0];
       try {
-        validateFile(selectedFile, type as 'image' | 'music' | 'art' | 'writing');
         setFile(selectedFile);
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          setPreview(reader.result as string);
-        };
-        reader.readAsDataURL(selectedFile);
+        setPreview(URL.createObjectURL(selectedFile));
       } catch (err) {
         toast({
           title: 'Invalid file',
-          description: err instanceof Error ? err.message : 'Invalid file type or size',
+          description: err instanceof Error ? err.message : 'Please select a valid file',
           status: 'error',
           duration: 5000,
           isClosable: true,
@@ -70,6 +64,17 @@ export function StoryIPRegistration(): JSX.Element {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    if (!address) {
+      toast({
+        title: 'Wallet not connected',
+        description: 'Please connect your wallet to register IP',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
+      return;
+    }
+
     if (!title || !description) {
       toast({
         title: 'Missing information',
@@ -83,14 +88,11 @@ export function StoryIPRegistration(): JSX.Element {
 
     try {
       setIsSubmitting(true);
-      let imageUrl = '';
-      
-      if (file) {
-        imageUrl = await uploadToIPFS(file);
-      }
+      setUploadProgress(0);
+      setIsUploading(true);
 
-      const metadata = await generateMetadata(title, description, imageUrl, type);
-      const result = await registerIP(metadata);
+      // Register IP using our working implementation
+      const response = await registerNewIP(title, description, file || undefined, type);
 
       toast({
         title: 'Success',
@@ -106,6 +108,7 @@ export function StoryIPRegistration(): JSX.Element {
       setFile(null);
       setPreview(null);
       setType('text');
+      setUploadProgress(0);
     } catch (err) {
       console.error('Failed to register IP:', err);
       toast({
@@ -117,20 +120,29 @@ export function StoryIPRegistration(): JSX.Element {
       });
     } finally {
       setIsSubmitting(false);
+      setIsUploading(false);
     }
   };
+
+  if (isClientLoading) {
+    return (
+      <Center minH="200px">
+        <Text>Loading Story Protocol...</Text>
+      </Center>
+    );
+  }
 
   return (
     <Box maxW="container.md" mx="auto" py={8}>
       <form onSubmit={handleSubmit}>
         <VStack spacing={6} align="stretch">
           <FormControl isRequired>
-            <FormLabel color="white">Title</FormLabel>
+            <FormLabel>Title</FormLabel>
             <Input
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Enter the title of your IP"
-              backgroundColor="brand.darkGray"
+              bg="brand.darkGray"
               borderColor="brand.lightGray"
               color="white"
               _hover={{ borderColor: 'brand.blue' }}
@@ -139,12 +151,12 @@ export function StoryIPRegistration(): JSX.Element {
           </FormControl>
 
           <FormControl isRequired>
-            <FormLabel color="white">Description</FormLabel>
+            <FormLabel>Description</FormLabel>
             <Textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Describe your IP"
-              backgroundColor="brand.darkGray"
+              bg="brand.darkGray"
               borderColor="brand.lightGray"
               color="white"
               _hover={{ borderColor: 'brand.blue' }}
@@ -153,22 +165,22 @@ export function StoryIPRegistration(): JSX.Element {
           </FormControl>
 
           <FormControl>
-            <FormLabel color="white">Asset Type</FormLabel>
+            <FormLabel>Asset Type</FormLabel>
             <Grid templateColumns="repeat(5, 1fr)" gap={4}>
-              {ASSET_TYPES.map((assetType) => (
+              {assetTypes.map((assetType) => (
                 <GridItem key={assetType.value}>
                   <Button
-                    w="full"
-                    h="full"
-                    p={4}
+                    onClick={() => setType(assetType.value as AssetType)}
                     variant={type === assetType.value ? 'solid' : 'outline'}
-                    onClick={() => setType(assetType.value)}
                     colorScheme="blue"
+                    width="100%"
+                    height="100px"
+                    display="flex"
+                    flexDirection="column"
+                    gap={2}
                   >
-                    <VStack>
-                      <Icon as={assetType.icon} boxSize={6} />
-                      <Text fontSize="sm">{assetType.label}</Text>
-                    </VStack>
+                    <Icon as={assetType.icon} boxSize={6} />
+                    <Text>{assetType.label}</Text>
                   </Button>
                 </GridItem>
               ))}
@@ -176,39 +188,65 @@ export function StoryIPRegistration(): JSX.Element {
           </FormControl>
 
           <FormControl>
-            <FormLabel color="white">File Upload</FormLabel>
+            <FormLabel>Upload File (Optional)</FormLabel>
             <Input
               type="file"
-              accept={
-                type === 'image'
-                  ? 'image/*'
-                  : type === 'music'
-                  ? 'audio/*'
-                  : type === 'art'
-                  ? 'image/*'
-                  : 'application/pdf'
-              }
               onChange={handleFileChange}
-              backgroundColor="brand.darkGray"
-              borderColor="brand.lightGray"
-              color="white"
-              _hover={{ borderColor: 'brand.blue' }}
-              _focus={{ borderColor: 'brand.blue', boxShadow: 'none' }}
+              display="none"
+              id="file-upload"
             />
-            {preview && type === 'image' && (
-              <Box mt={2}>
-                <Image src={preview} maxH="200px" objectFit="contain" />
-              </Box>
-            )}
+            <Button
+              as="label"
+              htmlFor="file-upload"
+              colorScheme="blue"
+              variant="outline"
+              width="100%"
+              height="100px"
+              cursor="pointer"
+              display="flex"
+              flexDirection="column"
+              gap={2}
+            >
+              <Icon as={FiFile} boxSize={6} />
+              <Text>{file ? file.name : 'Choose a file'}</Text>
+            </Button>
           </FormControl>
+
+          {preview && (
+            <Box>
+              <Image src={preview} alt="Preview" maxH="200px" objectFit="contain" />
+            </Box>
+          )}
+
+          {isUploading && (
+            <Box>
+              <Text mb={2}>Uploading to IPFS: {uploadProgress}%</Text>
+              <Box
+                w="100%"
+                h="2px"
+                bg="gray.200"
+                position="relative"
+                overflow="hidden"
+              >
+                <Box
+                  position="absolute"
+                  left="0"
+                  top="0"
+                  h="100%"
+                  w={`${uploadProgress}%`}
+                  bg="blue.500"
+                  transition="width 0.3s ease-in-out"
+                />
+              </Box>
+            </Box>
+          )}
 
           <Button
             type="submit"
             colorScheme="blue"
             size="lg"
-            isLoading={isSubmitting || isLoading}
-            loadingText="Registering IP..."
-            isDisabled={isSubmitting || isLoading}
+            isLoading={isSubmitting}
+            loadingText="Registering..."
           >
             Register IP
           </Button>

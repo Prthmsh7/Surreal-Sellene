@@ -4,13 +4,12 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { Spinner, Center } from '@chakra-ui/react';
 import { Navbar } from './components/Navbar';
 import { AuthProvider } from './contexts/AuthContext';
+import { StoryProtocolProvider } from './providers/StoryProtocolProvider';
 import { StoryProvider } from './contexts/StoryContext';
 import { DeBridgeProvider } from './contexts/DeBridgeContext';
 import { Toaster } from 'react-hot-toast';
 import { WagmiConfig } from 'wagmi';
 import { config } from './config/wagmi';
-import { StoryProtocolProvider } from '@story-protocol/react-sdk';
-import { STORY_PROTOCOL_CONFIG } from './config/storyProtocol';
 import './App.css';
 import theme from './theme';
 
@@ -48,15 +47,9 @@ const App = () => {
     <ChakraProvider theme={theme}>
       <WagmiConfig config={config}>
         <AuthProvider>
-          <StoryProvider>
-            <DeBridgeProvider>
-              <StoryProtocolProvider
-                config={{
-                  rpcUrl: STORY_PROTOCOL_CONFIG.rpcUrl,
-                  chainId: STORY_PROTOCOL_CONFIG.chainId,
-                  apiUrl: import.meta.env.VITE_STORY_API_URL,
-                }}
-              >
+          <StoryProtocolProvider>
+            <StoryProvider>
+              <DeBridgeProvider>
                 <Router>
                   <div className="min-h-screen bg-gradient-to-br from-purple-900 via-indigo-900 to-blue-900">
                     <Navbar />
@@ -91,9 +84,9 @@ const App = () => {
                     <Toaster position="top-right" />
                   </div>
                 </Router>
-              </StoryProtocolProvider>
-            </DeBridgeProvider>
-          </StoryProvider>
+              </DeBridgeProvider>
+            </StoryProvider>
+          </StoryProtocolProvider>
         </AuthProvider>
       </WagmiConfig>
     </ChakraProvider>

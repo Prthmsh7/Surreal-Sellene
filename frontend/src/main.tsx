@@ -37,15 +37,15 @@ root.render(
             appName: TOMO_CONFIG.metadata.name,
             projectId: TOMO_CONFIG.projectId,
             clientId: TOMO_CONFIG.clientId,
-            modalSize: 'wide',
+            modalSize: 'compact',
             theme: {
               mode: 'dark',
               accentColor: '#0066cc',
               borderRadius: 'medium'
             },
-            showRecentTransactions: true,
-            coolMode: true,
-            socialsFirst: true,
+            showRecentTransactions: false,
+            coolMode: false,
+            socialsFirst: false,
             initialChain: sepolia,
             _noOtherWallets: false,
             appInfo: {

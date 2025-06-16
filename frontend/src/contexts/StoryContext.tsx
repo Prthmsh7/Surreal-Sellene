@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { useAccount } from 'wagmi';
 import { toast } from 'react-hot-toast';
 import { useStoryProtocolHook } from '../hooks/useStoryProtocol';
+import { useStoryProtocol } from '../providers/StoryProtocolProvider';
 
 interface IP {
   id: string;
@@ -38,13 +39,18 @@ type StoryProviderProps = {
 
 export function StoryProvider({ children }: StoryProviderProps) {
   const { address } = useAccount();
+  const { client, isLoading: isClientLoading } = useStoryProtocol();
   const [registeredIPs, setRegisteredIPs] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { registerNewIP, getIPDetails } = useStoryProtocolHook();
+  const { registerNewIP, getIPDetails, isInitialized } = useStoryProtocolHook();
 
   const refreshIPs = async () => {
-    if (!address) return;
+    if (!address || !isInitialized) {
+      console.log('Skipping refreshIPs - not ready:', { address, isInitialized });
+      return;
+    }
+
     try {
       setIsLoading(true);
       const ips = await getIPDetails(address);
@@ -61,10 +67,11 @@ export function StoryProvider({ children }: StoryProviderProps) {
   };
 
   useEffect(() => {
-    if (address) {
+    if (address && isInitialized && !isClientLoading) {
+      console.log('Running refreshIPs - all conditions met:', { address, isInitialized, isClientLoading });
       refreshIPs();
     }
-  }, [address]);
+  }, [address, isInitialized, isClientLoading]);
 
   const registerIP = async (
     title: string,
@@ -74,6 +81,11 @@ export function StoryProvider({ children }: StoryProviderProps) {
   ) => {
     if (!address) {
       toast.error('Please connect your wallet first');
+      return;
+    }
+
+    if (!isInitialized) {
+      toast.error('Story Protocol is not initialized yet');
       return;
     }
 
@@ -95,7 +107,7 @@ export function StoryProvider({ children }: StoryProviderProps) {
 
   const value = {
     registeredIPs,
-    loading: isLoading,
+    loading: isLoading || isClientLoading,
     error,
     registerIP,
     refreshIPs,

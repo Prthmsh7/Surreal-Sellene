@@ -1,19 +1,30 @@
 const hre = require("hardhat");
 
 async function main() {
-  // DeBridge gate address on Goerli
-  const DEBRIDGE_GATE_ADDRESS = "0x43dE2d77BF8027e25dBD179B491e8d64f38398aA";
+  console.log("Deploying contracts...");
 
-  console.log("Deploying DeBridgeHandler...");
-  console.log("Using DeBridge Gate at:", DEBRIDGE_GATE_ADDRESS);
-  
-  const DeBridgeHandler = await hre.ethers.getContractFactory("DeBridgeHandler");
-  const handler = await DeBridgeHandler.deploy(DEBRIDGE_GATE_ADDRESS);
-  
-  await handler.deployed();
-  
-  console.log("DeBridgeHandler deployed to:", handler.address);
-  console.log("Transaction hash:", handler.deployTransaction.hash);
+  // Deploy IP Registry
+  const IPRegistry = await hre.ethers.getContractFactory("IPRegistry");
+  const ipRegistry = await IPRegistry.deploy();
+  await ipRegistry.deployed();
+  console.log("IP Registry deployed to:", ipRegistry.address);
+
+  // Deploy License Registry
+  const LicenseRegistry = await hre.ethers.getContractFactory("LicenseRegistry");
+  const licenseRegistry = await LicenseRegistry.deploy(ipRegistry.address);
+  await licenseRegistry.deployed();
+  console.log("License Registry deployed to:", licenseRegistry.address);
+
+  // Deploy Dispute Module
+  const DisputeModule = await hre.ethers.getContractFactory("DisputeModule");
+  const disputeModule = await DisputeModule.deploy(ipRegistry.address, licenseRegistry.address);
+  await disputeModule.deployed();
+  console.log("Dispute Module deployed to:", disputeModule.address);
+
+  console.log("\nAdd these addresses to your .env file:");
+  console.log(`VITE_IP_REGISTRY_ADDRESS=${ipRegistry.address}`);
+  console.log(`VITE_LICENSE_REGISTRY_ADDRESS=${licenseRegistry.address}`);
+  console.log(`VITE_DISPUTE_MODULE_ADDRESS=${disputeModule.address}`);
 }
 
 main()

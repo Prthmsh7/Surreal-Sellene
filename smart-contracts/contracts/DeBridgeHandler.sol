@@ -27,7 +27,7 @@ contract DeBridgeHandler is Ownable {
         bytes32 transactionId
     );
 
-    constructor(address _gate) Ownable(msg.sender) {
+   constructor(address _gate) {
         gate = _gate;
     }
 

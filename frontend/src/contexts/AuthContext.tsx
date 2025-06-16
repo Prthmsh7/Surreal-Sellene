@@ -16,7 +16,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const { address, isConnected } = useAccount();
   const { openConnectModal } = useConnectModal();
   const [loading, setLoading] = useState(false);
-  const [retryCount, setRetryCount] = useState(0);
 
   const connect = async () => {
     if (!openConnectModal) {
@@ -27,33 +26,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       setLoading(true);
       
-      // Reset retry count
-      setRetryCount(0);
-      
-      // Add a delay before opening the modal
-      await new Promise(resolve => setTimeout(resolve, 500));
-      
       // Open the connect modal
       await openConnectModal();
       
-      // Wait for connection
-      const maxRetries = 3;
-      const checkConnection = async () => {
-        if (isConnected) {
-          console.log('Wallet connected successfully:', address);
-          return;
-        }
-        
-        if (retryCount < maxRetries) {
-          setRetryCount(prev => prev + 1);
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          await checkConnection();
-        } else {
-          console.error('Failed to connect after multiple attempts');
-        }
-      };
+      // Wait for connection with timeout
+      const timeout = 15000; // 15 seconds timeout
+      const startTime = Date.now();
       
-      await checkConnection();
+      while (!isConnected && Date.now() - startTime < timeout) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+      }
+      
+      if (!isConnected) {
+        throw new Error('Connection timeout');
+      }
+      
+      console.log('Wallet connected successfully:', address);
       
     } catch (error) {
       console.error('Failed to connect:', error);
