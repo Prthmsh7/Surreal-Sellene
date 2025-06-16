@@ -1,6 +1,38 @@
-import { Box } from '@chakra-ui/react'
+import {
+  Box,
+  Container,
+  VStack,
+  HStack,
+  Text,
+  Heading,
+  Button,
+  SimpleGrid,
+  Icon,
+  Badge,
+  Code,
+  useColorModeValue,
+  Link,
+} from '@chakra-ui/react'
+import { motion } from 'framer-motion'
+import { Link as RouterLink } from 'react-router-dom'
+import {
+  FaRocket,
+  FaUsers,
+  FaCoins,
+  FaChartLine,
+  FaHandshake,
+  FaLock,
+  FaGlobe,
+  FaShieldAlt,
+  FaBook,
+  FaCode,
+  FaTerminal,
+} from 'react-icons/fa'
+import AnimatedPage from '../components/AnimatedPage'
 import MarqueeMenu from '../components/MarqueeMenu'
 import '../components/MarqueeMenu.css'
+
+const MotionBox = motion(Box)
 
 const Developers = () => {
   const bgColor = useColorModeValue('brand.darkerGray', 'brand.darkerGray')
@@ -207,8 +239,12 @@ const Developers = () => {
                     borderRadius="lg"
                     border="1px"
                     borderColor={borderColor}
-                    transition="transform 0.2s"
-                    _hover={{ transform: 'translateY(-4px)' }}
+                    transition="all 0.2s"
+                    _hover={{ 
+                      transform: 'translateY(-4px)',
+                      borderColor: 'brand.blue',
+                      boxShadow: '0 10px 20px rgba(66, 153, 225, 0.2)'
+                    }}
                   >
                     <VStack align="start" spacing={4}>
                       <HStack spacing={4}>
@@ -251,22 +287,24 @@ const Developers = () => {
               <VStack spacing={6} align="start">
                 <Heading size="lg" color="white">Join Our Community</Heading>
                 <Text color="brand.lightGray">
-                  Connect with other developers, share your projects, and get help from our team
+                  Connect with other developers, share ideas, and get help from our team
                 </Text>
                 <HStack spacing={4}>
                   <Button
-                    leftIcon={<FaGithub />}
+                    as={Link}
+                    href="#"
                     colorScheme="blue"
-                    variant="outline"
-                  >
-                    GitHub
-                  </Button>
-                  <Button
-                    leftIcon={<FaBook />}
-                    colorScheme="blue"
-                    variant="outline"
+                    leftIcon={<FaGlobe />}
                   >
                     Discord
+                  </Button>
+                  <Button
+                    as={Link}
+                    href="#"
+                    variant="outline"
+                    leftIcon={<FaCode />}
+                  >
+                    GitHub
                   </Button>
                 </HStack>
               </VStack>
@@ -278,35 +316,37 @@ const Developers = () => {
   )
 }
 
-const StatCard = ({ icon, label, value, helpText }: { icon: any; label: string; value: string; helpText: string }) => {
-  return (
-    <MotionBox
-      whileHover={{ y: -5 }}
-      transition={{ duration: 0.2 }}
-    >
-      <Stat
-        px={6}
-        py={8}
-        bg="brand.darkGray"
-        rounded="lg"
-        border="1px"
-        borderColor="brand.lightGray"
-      >
-        <Icon as={icon} w={8} h={8} color="brand.blue" mb={4} />
-        <StatLabel color="brand.lightGray">{label}</StatLabel>
-        <StatNumber color="white" fontSize="3xl" fontFamily="heading">{value}</StatNumber>
-        <StatHelpText color="brand.blue">{helpText}</StatHelpText>
-      </Stat>
-    </MotionBox>
-  )
-}
+const StatCard = ({ icon, label, value, helpText }: { icon: any; label: string; value: string; helpText: string }) => (
+  <Box
+    bg={useColorModeValue('brand.darkerGray', 'brand.darkerGray')}
+    p={6}
+    borderRadius="lg"
+    border="1px"
+    borderColor={useColorModeValue('brand.lightGray', 'brand.lightGray')}
+  >
+    <VStack align="start" spacing={2}>
+      <Icon as={icon} boxSize={6} color="brand.blue" />
+      <Text color="brand.lightGray" fontSize="sm">{label}</Text>
+      <Heading size="lg" color="white">{value}</Heading>
+      <Text color="brand.blue" fontSize="sm">{helpText}</Text>
+    </VStack>
+  </Box>
+)
 
-const SecurityCard = ({ icon, title, description }: { icon: any; title: string; description: string }) => {
-  return (
-    <Box as="main" minH="100vh" bg="var(--color-bg)" overflow="hidden">
-      <MarqueeMenu />
-    </Box>
-  )
-}
+const SecurityCard = ({ icon, title, description }: { icon: any; title: string; description: string }) => (
+  <Box
+    bg={useColorModeValue('brand.darkerGray', 'brand.darkerGray')}
+    p={6}
+    borderRadius="lg"
+    border="1px"
+    borderColor={useColorModeValue('brand.lightGray', 'brand.lightGray')}
+  >
+    <VStack align="start" spacing={4}>
+      <Icon as={icon} boxSize={8} color="brand.blue" />
+      <Heading size="md" color="white">{title}</Heading>
+      <Text color="brand.lightGray">{description}</Text>
+    </VStack>
+  </Box>
+)
 
 export default Developers 
