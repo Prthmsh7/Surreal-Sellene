@@ -1,125 +1,108 @@
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { useAccount } from 'wagmi';
-import { toast } from 'react-hot-toast';
-import { useStoryProtocolHook } from '../hooks/useStoryProtocol';
-import { useStoryProtocol } from '../providers/StoryProtocolProvider';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { useAuth } from './AuthContext';
+import { mainnet } from 'wagmi/chains';
 
 interface IP {
   id: string;
   name: string;
   description: string;
   image: string;
-  type: 'text' | 'image' | 'music' | 'art' | 'writing';
-  attributes: Record<string, any>;
-  owner: string;
-  createdAt: string;
+  attributes: Array<{
+    trait_type: string;
+    value: string;
+  }>;
 }
 
-interface StoryContextType {
-  registeredIPs: any[];
-  loading: boolean;
-  error: string | null;
-  registerIP: (title: string, description: string, file?: File, type?: 'text' | 'image' | 'music' | 'art' | 'writing') => Promise<void>;
-  refreshIPs: () => Promise<void>;
-}
-
-const defaultContext: StoryContextType = {
-  registeredIPs: [],
-  loading: false,
-  error: null,
-  registerIP: async () => {},
-  refreshIPs: async () => {},
-};
-
-const StoryContext = createContext<StoryContextType>(defaultContext);
-
-type StoryProviderProps = {
-  children: ReactNode;
-};
-
-export function StoryProvider({ children }: StoryProviderProps) {
-  const { address } = useAccount();
-  const { client, isLoading: isClientLoading } = useStoryProtocol();
-  const [registeredIPs, setRegisteredIPs] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+export function StoryProvider({ children }: { children: React.ReactNode }) {
+  const { address } = useAuth();
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { registerNewIP, getIPDetails, isInitialized } = useStoryProtocolHook();
+  const [registeredIPs, setRegisteredIPs] = useState<Array<{ ipId: string; title: string; description: string }>>([]);
+
+  useEffect(() => {
+    if (address) {
+      refreshIPs();
+    }
+  }, [address]);
 
   const refreshIPs = async () => {
-    if (!address || !isInitialized) {
-      console.log('Skipping refreshIPs - not ready:', { address, isInitialized });
-      return;
-    }
-
+    if (!address) return;
+    
     try {
-      setIsLoading(true);
-      const ips = await getIPDetails(address);
-      if (ips) {
-        setRegisteredIPs(Array.isArray(ips) ? ips : [ips]);
-      }
+      setLoading(true);
+      setError(null);
+
+      // Format IP ID based on wallet address
+      const ipId = `story:${address.toLowerCase()}`;
+      
+      // For now, we'll just show the wallet's IP
+      setRegisteredIPs([{
+        ipId,
+        title: 'My Story Protocol IP',
+        description: 'IP registered on Story Protocol'
+      }]);
+
     } catch (err) {
-      console.error('Failed to refresh IPs:', err);
-      toast.error('Failed to refresh IPs');
-      setError(err instanceof Error ? err.message : 'Failed to refresh IPs');
+      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch IPs';
+      setError(errorMessage);
+      console.error('Error fetching IPs:', err);
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
-  useEffect(() => {
-    if (address && isInitialized && !isClientLoading) {
-      console.log('Running refreshIPs - all conditions met:', { address, isInitialized, isClientLoading });
-      refreshIPs();
-    }
-  }, [address, isInitialized, isClientLoading]);
-
-  const registerIP = async (
-    title: string,
-    description: string,
-    file?: File,
-    type: 'text' | 'image' | 'music' | 'art' | 'writing' = 'text'
-  ) => {
-    if (!address) {
-      toast.error('Please connect your wallet first');
-      return;
-    }
-
-    if (!isInitialized) {
-      toast.error('Story Protocol is not initialized yet');
-      return;
-    }
-
+  const registerIP = async (title: string, description: string, mediaUrl: string) => {
+    if (!address) throw new Error('Wallet not connected');
+    
     try {
-      setIsLoading(true);
+      setLoading(true);
       setError(null);
-      await registerNewIP(title, description, file, type);
-      toast.success('IP registered successfully');
+
+      // Format IP ID based on wallet address
+      const ipId = `story:${address.toLowerCase()}`;
+      
+      // For now, we'll just return the IP ID
+      // In a real implementation, this would interact with the Story Protocol smart contract
       await refreshIPs();
+      return ipId;
+
     } catch (err) {
-      console.error('Failed to register IP:', err);
-      toast.error('Failed to register IP');
-      setError(err instanceof Error ? err.message : 'Failed to register IP');
-      throw err;
+      const errorMessage = err instanceof Error ? err.message : 'Failed to register IP';
+      setError(errorMessage);
+      console.error('Error registering IP:', err);
+      throw new Error(errorMessage);
     } finally {
-      setIsLoading(false);
+      setLoading(false);
     }
   };
 
   const value = {
-    registeredIPs,
-    loading: isLoading || isClientLoading,
+    loading,
     error,
-    registerIP,
+    registeredIPs,
     refreshIPs,
+    registerIP
   };
 
-  return <StoryContext.Provider value={value}>{children}</StoryContext.Provider>;
+  return (
+    <StoryContext.Provider value={value}>
+      {children}
+    </StoryContext.Provider>
+  );
 }
 
-export function useStory() {
-  const context = useContext(StoryContext);
-  if (context === undefined) {
-    throw new Error('useStory must be used within a StoryProvider');
-  }
-  return context;
-} 
+const StoryContext = createContext<{
+  loading: boolean;
+  error: string | null;
+  registeredIPs: Array<{ ipId: string; title: string; description: string }>;
+  refreshIPs: () => Promise<void>;
+  registerIP: (title: string, description: string, mediaUrl: string) => Promise<string>;
+}>({
+  loading: false,
+  error: null,
+  registeredIPs: [],
+  refreshIPs: async () => {},
+  registerIP: async () => ''
+});
+
+export const useStory = () => useContext(StoryContext); 

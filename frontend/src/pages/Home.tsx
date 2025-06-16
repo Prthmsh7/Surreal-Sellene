@@ -8,8 +8,10 @@ import {
   HStack,
   Icon,
   Button,
+  Link,
   Grid,
   GridItem,
+  Flex,
   Circle,
   useToken,
   useToast,
@@ -29,7 +31,7 @@ import {
 } from 'react-icons/fa'
 import AnimatedPage from '../components/AnimatedPage'
 import selleneLogo from '../assets/Sellene-logo-light.png'
-import { useNavigate } from 'react-router-dom'
+import { Link as RouterLink, useNavigate } from 'react-router-dom'
 
 const MotionBox = motion(Box)
 
@@ -43,6 +45,11 @@ const pulse = keyframes`
   0% { transform: scale(1); opacity: 0.5; }
   50% { transform: scale(1.1); opacity: 0.8; }
   100% { transform: scale(1); opacity: 0.5; }
+`
+
+const rotate = keyframes`
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
 `
 
 const Home = () => {
@@ -73,10 +80,6 @@ const Home = () => {
         position="relative"
         overflow="hidden"
         style={{ zIndex: 0 }}
-        w="100vw"
-        maxW="100vw"
-        m={0}
-        p={0}
       >
         {/* Animated background elements */}
         <Box
@@ -104,40 +107,22 @@ const Home = () => {
           animation={`${float} 8s ease-in-out infinite reverse`}
         />
 
-        <Box 
-          position="relative" 
-          zIndex="1" 
-          h="100vh" 
-          w="100%"
-          maxW="100%"
-          m={0}
-          p={0}
-          display="flex"
-          alignItems="center"
-          justifyContent="center"
-        >
+        <Container maxW="container.xl" position="relative" zIndex="1" h="100vh" py={4}>
           <Grid 
             templateRows="1fr"
             gap={4}
             h="full"
-            w="100%"
-            maxW="100%"
-            m={0}
-            p={0}
-            px={{ base: 4, md: 8, lg: 12 }}
           >
-            <GridItem display="flex" alignItems="center">
+            <GridItem>
               <Grid 
                 templateColumns={{ base: "1fr", lg: "1fr 1fr" }} 
-                gap={{ base: 8, lg: 12 }} 
+                gap={8} 
                 alignItems="center"
                 h="full"
-                w="100%"
-                maxW="100%"
               >
                 {/* Left Column - Logo and Main Content */}
                 <GridItem>
-                  <VStack align="start" spacing={6} w="full">
+                  <VStack align="center" spacing={4}>
                     <MotionBox
                       initial={{ opacity: 0, scale: 0.8 }}
                       animate={{ opacity: 1, scale: 1 }}
@@ -146,7 +131,7 @@ const Home = () => {
                       w="full"
                       display="flex"
                       justifyContent="center"
-                      mb={4}
+                      mb={2}
                     >
                       <Circle
                         size="500px"
@@ -161,7 +146,7 @@ const Home = () => {
                       <Image
                         src={selleneLogo}
                         alt="Sellene Logo"
-                        w={{ base: "300px", md: "400px" }}
+                        w="400px"
                         h="auto"
                         objectFit="contain"
                         filter="drop-shadow(0 0 40px rgba(66, 153, 225, 0.5))"
@@ -170,7 +155,7 @@ const Home = () => {
                       />
                     </MotionBox>
 
-                    <VStack align="start" spacing={6} w="full">
+                    <VStack align="start" spacing={4} w="full">
                       <Text
                         fontSize={{ base: "3xl", md: "4xl", lg: "5xl" }}
                         fontWeight="bold"
@@ -223,7 +208,6 @@ const Home = () => {
                     gap={4}
                     maxH="calc(100vh - 100px)"
                     overflowY="auto"
-                    w="100%"
                     sx={{
                       '&::-webkit-scrollbar': {
                         width: '4px',
@@ -321,7 +305,7 @@ const Home = () => {
               </Grid>
             </GridItem>
           </Grid>
-        </Box>
+        </Container>
 
         {/* Simple Marquee Footer */}
         <Box

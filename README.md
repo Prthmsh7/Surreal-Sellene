@@ -1,61 +1,5 @@
 # Sellene
 
-## Key Stuff
-
-**Host:** Story – The World's IP Blockchain. A purpose-built L1 that tokenizes intelligence and makes it programmable.
-
-## Track Prizes
-1. **Non-Technical / Creator**  
-   Empower creators without deep technical backgrounds to ideate and conceptualize new IP-centric business models, products, or services.
-
-2. **AI Agents**  
-   Build AI-driven autonomous agents that exchange, license, or creatively leverage IP using Story's ATCP/IP infrastructure.
-
-3. **Creative Front-End / UX**  
-   Create intuitive, aesthetic, and user-friendly front-ends for popular open-source generative media tools—seamlessly integrated with the Story SDK and IP registration flows.
-
-4. **IP Finance (IPFi)**  
-   Design decentralized marketplace concepts, focusing on secondary IP markets, fractional IP ownership, and creator-driven monetization models.
-
-5. **IP Detection & Enforcement**  
-   Design secondary IP markets for trading/buying/selling IP, fractional IP ownership platforms, or any IP finance-related concept.
-
-6. **Data & Search**  
-   Build tools that register, protect, and monetize datasets leveraging Story's Group Module. Or, build IP discovery platforms to find and license IP.
-
-## Other Track Prizes and Bounties
-
-### That We'll Use (Higher Priority)
-1. **Tomo**  
-   Projects need to integrate Tomo SDK (social login & wallet aggregator) as the wallet solution.  
-   - **Prize:** $10,000  
-   - **Link:** [Tomo Web SDK Documentation](https://docs.tomo.inc/tomo-sdk/tomo-web-sdk)
-
-2. **AWE**  
-   Build a live, persistent autonomous world to be deployed on world.fun using the AWE Framework. It must feature multi-agent interaction, an on-chain economy, and more.  
-   - **Prize:** $2,000  
-   - **Link:** [AWE Framework Documentation](https://docs.awenetwork.ai/)
-
-3. **Yakoa**  
-   Build a creative interface that uses Yakoa's API to surface authentic, high-originality content in the wild — and show how it could be extended, licensed, or monetized.  
-   - **Prize:** $2,500  
-   - **Link:** [Yakoa API Documentation](https://docs.yakoa.io/reference/getting-started)
-
-4. **Fleek**  
-   Build with Fleek, the Agentic Cloud Platform. Create an AI agent, virtual influencer, or monetization tool using Fleek's infrastructure.  
-   - **Prize:** $2,000 (Paid in USDC)  
-   - **Link:** [Fleek Documentation](https://fleek.xyz/)
-
-5. **deBridge**  
-   Enable cross-chain functionality for Story through deBridge's infrastructure.  
-   - **Prize:** $5,000  
-   - **Link:** [deBridge Developer Docs](https://debridge.finance/develop)
-
-6. **Gaia**  
-   DeIPAI: Create autonomous AI agents utilizing the Gaia stack that supports IP sovereignty, protection, and verification without human interference.  
-   - **Prize:** $1,500  
-   - **Link:** [Gaia Documentation](https://www.gaianet.ai/)
-
 # IDEA
 
 Imagine a website where artists, musicians, writers, or inventors can turn pieces of their work—like a song, a painting, or a patent—into tiny "shares" that anyone can buy. Here's how it works in plain terms:
@@ -89,4 +33,56 @@ On the front page, you'll see two main areas: one for creators and one for inves
 ---
 
 In short, we're building a platform that makes it easy for creators to get paid fairly and for anyone to own a part of creative works. It's like a stock market—but instead of trading company shares, you're trading tiny pieces of art, music, or other intellectual property.
+
+**Story** – The World's IP Blockchain. A purpose-built L1 that tokenizes intelligence and makes it programmable.
+
+1. **Non-Technical / Creator**  
+   Empower creators without deep technical backgrounds to ideate and conceptualize new IP-centric business models, products, or services.
+
+2. **AI Agents**  
+   Build AI-driven autonomous agents that exchange, license, or creatively leverage IP using Story's ATCP/IP infrastructure.
+
+3. **Creative Front-End / UX**  
+   Create intuitive, aesthetic, and user-friendly front-ends for popular open-source generative media tools—seamlessly integrated with the Story SDK and IP registration flows.
+
+4. **IP Finance (IPFi)**  
+   Design decentralized marketplace concepts, focusing on secondary IP markets, fractional IP ownership, and creator-driven monetization models.
+
+5. **IP Detection & Enforcement**  
+   Design secondary IP markets for trading/buying/selling IP, fractional IP ownership platforms, or any IP finance-related concept.
+
+6. **Data & Search**  
+   Build tools that register, protect, and monetize datasets leveraging Story's Group Module. Or, build IP discovery platforms to find and license IP.
+
+
+
+### That We'll Use (Higher Priority)
+1. **Tomo**  
+   Projects need to integrate Tomo SDK (social login & wallet aggregator) as the wallet solution.  
+
+   - **Link:** [Tomo Web SDK Documentation](https://docs.tomo.inc/tomo-sdk/tomo-web-sdk)
+
+2. **AWE**  
+   Build a live, persistent autonomous world to be deployed on world.fun using the AWE Framework. It must feature multi-agent interaction, an on-chain economy, and more.  
+ 
+   - **Link:** [AWE Framework Documentation](https://docs.awenetwork.ai/)
+
+3. **Yakoa**  
+   Build a creative interface that uses Yakoa's API to surface authentic, high-originality content in the wild — and show how it could be extended, licensed, or monetized.  
+   -
+   - **Link:** [Yakoa API Documentation](https://docs.yakoa.io/reference/getting-started)
+
+4. **Fleek**  
+   Build with Fleek, the Agentic Cloud Platform. Create an AI agent, virtual influencer, or monetization tool using Fleek's infrastructure.  
+    
+   - **Link:** [Fleek Documentation](https://fleek.xyz/)
+
+5. **deBridge**  
+   Enable cross-chain functionality for Story through deBridge's infrastructure.  
+   
+   - **Link:** [deBridge Developer Docs](https://debridge.finance/develop)
+
+6. **Gaia**  
+   DeIPAI: Create autonomous AI agents utilizing the Gaia stack that supports IP sovereignty, protection, and verification without human interference.  
+   - **Link:** [Gaia Documentation](https://www.gaianet.ai/)
 

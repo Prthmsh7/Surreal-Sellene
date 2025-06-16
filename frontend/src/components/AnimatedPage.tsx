@@ -1,16 +1,9 @@
-import { Box, BoxProps } from '@chakra-ui/react';
-import { motion, HTMLMotionProps } from 'framer-motion';
-import { ReactNode } from 'react';
+import { Box } from '@chakra-ui/react'
+import { motion } from 'framer-motion'
 
-interface AnimatedPageProps {
-  children: ReactNode;
-}
+const MotionBox = motion(Box)
 
-type MotionBoxProps = HTMLMotionProps<"div"> & BoxProps;
-
-const MotionBox = motion(Box) as React.ComponentType<MotionBoxProps>;
-
-const AnimatedPage: React.FC<AnimatedPageProps> = ({ children }) => {
+const AnimatedPage = ({ children }: { children: React.ReactNode }) => {
   return (
     <MotionBox
       initial={{ opacity: 0, y: 20 }}
@@ -21,7 +14,7 @@ const AnimatedPage: React.FC<AnimatedPageProps> = ({ children }) => {
     >
       {children}
     </MotionBox>
-  );
-};
+  )
+}
 
-export default AnimatedPage; 
+export default AnimatedPage 

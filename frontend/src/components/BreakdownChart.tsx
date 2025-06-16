@@ -1,24 +1,12 @@
 import { ResponsivePie } from '@nivo/pie'
-import { Box, Text, useColorModeValue, BoxProps, TextProps } from '@chakra-ui/react'
-import { ReactNode } from 'react'
+import { Box, Text, useColorModeValue } from '@chakra-ui/react'
 
-interface BreakdownChartProps {
-  isDashboard?: boolean;
-}
-
-interface ChartData {
-  id: string;
-  label: string;
-  value: number;
-  color: string;
-}
-
-const BreakdownChart: React.FC<BreakdownChartProps> = ({ isDashboard = false }) => {
+const BreakdownChart = ({ isDashboard = false }) => {
   const textColor = useColorModeValue('brand.lightGray', 'brand.lightGray')
   const gridColor = useColorModeValue('brand.lightGray', 'brand.lightGray')
 
   // Dummy data for the chart
-  const data: ChartData[] = [
+  const data = [
     {
       id: "Art",
       label: "Art",
