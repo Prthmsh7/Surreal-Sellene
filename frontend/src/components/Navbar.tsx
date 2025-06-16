@@ -27,19 +27,15 @@ import {
   MenuButton,
   MenuList,
   MenuItem,
-  useBreakpointValue,
-  IconButton,
+  MenuDivider,
 } from '@chakra-ui/react'
 import { Link as RouterLink, useLocation } from 'react-router-dom'
-import { FaSearch, FaBars, FaUserCircle, FaTimes } from 'react-icons/fa'
+import { FaSearch, FaBars, FaUserCircle, FaTimes, FaUser, FaCog, FaSignOutAlt } from 'react-icons/fa'
 import { useState, useRef } from 'react'
 import { useAccount } from 'wagmi'
 import { useConnectModal } from '@tomo-inc/tomo-evm-kit'
 import selleneLogo from '../assets/Sellene-logo-light.png'
 import { DeBridgeTest } from '../components/DeBridgeTest'
-import { motion } from 'framer-motion'
-
-const MotionBox = motion(Box)
 
 export const Navbar = () => {
   const location = useLocation()
@@ -52,7 +48,6 @@ export const Navbar = () => {
   const { address } = useAccount()
   const { openConnectModal } = useConnectModal()
   const [loading, setLoading] = useState(false)
-  const isMobile = useBreakpointValue({ base: true, md: false })
 
   // Mock search results - replace with actual API call
   const searchResults = [
@@ -119,13 +114,53 @@ export const Navbar = () => {
 
   const displayAddress = address ? `${address.slice(0, 6)}...${address.slice(-4)}` : 'Connect'
 
+  // Dummy profile data
+  const profileData = {
+    name: 'John Doe',
+    avatar: 'https://bit.ly/dan-abramov',
+    balance: '2.5 ETH',
+    collections: 3,
+    followers: 128,
+    following: 45,
+    bio: 'Digital artist and NFT enthusiast',
+    joinedDate: 'March 2023',
+    recentActivity: [
+      {
+        type: 'mint',
+        title: 'Neural Dreams #42',
+        timestamp: '2 hours ago',
+        value: '0.5 ETH'
+      },
+      {
+        type: 'sale',
+        title: 'Digital Sunset',
+        timestamp: '1 day ago',
+        value: '1.2 ETH'
+      },
+      {
+        type: 'purchase',
+        title: 'Cosmic Waves',
+        timestamp: '3 days ago',
+        value: '0.8 ETH'
+      }
+    ],
+    stats: {
+      totalSales: '12.5 ETH',
+      totalPurchases: '8.3 ETH',
+      itemsCreated: 15,
+      itemsSold: 8
+    },
+    badges: [
+      { name: 'Early Adopter', color: 'green' },
+      { name: 'Top Creator', color: 'purple' },
+      { name: 'Verified', color: 'blue' }
+    ]
+  }
+
   return (
     <Box
       as="nav"
       position="fixed"
-      top={0}
-      left={0}
-      right={0}
       w="full"
       h="80px"
       bg={bgColor}
@@ -133,35 +168,25 @@ export const Navbar = () => {
       borderColor={borderColor}
       zIndex={1000}
     >
-      <Container maxW="1400px" h="full" px={4}>
+      <Container maxW="1400px" h="full">
         <Flex h="full" align="center" justify="space-between">
-          {/* Left Section - Logo and Mobile Menu */}
-          <HStack spacing={4}>
-            <Icon
-              as={FaBars}
-              display={{ base: 'block', md: 'none' }}
-              color="white"
-              w={6}
-              h={6}
-              cursor="pointer"
-              onClick={onOpen}
-            />
+          {/* Left Section - Logo */}
+          <Box flex="0 0 auto">
             <RouterLink to="/">
               <HStack spacing={2}>
-                <Image src={selleneLogo} h="40px" alt="Sellene Logo" />
+                <Image src={selleneLogo} h="60px" alt="Sellene Logo" />
                 <Text
-                  fontSize="xl"
+                  fontSize="2xl"
                   fontWeight="bold"
                   color="white"
                   fontFamily="heading"
                   letterSpacing="tight"
-                  display={{ base: 'none', sm: 'block' }}
                 >
                   Sellene
                 </Text>
               </HStack>
             </RouterLink>
-          </HStack>
+          </Box>
 
           {/* Center Section - Search */}
           <Box
@@ -261,70 +286,207 @@ export const Navbar = () => {
             )}
           </Box>
 
-          {/* Right Section - Navigation and Connect */}
-          <HStack spacing={4} display={{ base: 'none', md: 'flex' }}>
-            {navItems.map((item) => (
-              <RouterLink key={item.path} to={item.path}>
-                <Text
-                  color={isActive(item.path) ? 'white' : 'brand.lightGray'}
-                  _hover={{ color: 'white' }}
-                  fontWeight={isActive(item.path) ? 'bold' : 'normal'}
-                >
-                  {item.name}
-                </Text>
-              </RouterLink>
-            ))}
-            <Button
-              onClick={handleAuth}
-              isLoading={loading}
-              bg="brand.blue"
-              color="white"
-              _hover={{ bg: 'brand.blueHover' }}
-              borderRadius="full"
-              px={6}
+          {/* Right Section - Navigation & Auth */}
+          <HStack spacing={4}>
+            {/* Desktop Navigation */}
+            <HStack
+              spacing={6}
+              display={{ base: 'none', lg: 'flex' }}
             >
-              {displayAddress}
+              {navItems.map((item) => (
+                <RouterLink key={item.path} to={item.path}>
+                  <Text
+                    color={isActive(item.path) ? 'white' : 'brand.lightGray'}
+                    fontWeight={isActive(item.path) ? 'bold' : 'normal'}
+                    _hover={{ color: 'white' }}
+                  >
+                    {item.name}
+                  </Text>
+                </RouterLink>
+              ))}
+            </HStack>
+
+            {/* Profile Section - Always visible */}
+            <Menu>
+              <MenuButton
+                as={Button}
+                variant="ghost"
+                _hover={{ bg: 'brand.darkerGray' }}
+                _active={{ bg: 'brand.darkerGray' }}
+              >
+                <HStack spacing={2}>
+                  <Avatar size="sm" src={address ? profileData.avatar : 'https://bit.ly/broken-link'} />
+                  <Text 
+                    color={address ? "white" : "brand.blue"} 
+                    display={{ base: 'none', md: 'block' }}
+                    fontWeight={address ? "normal" : "bold"}
+                  >
+                    {address ? profileData.name : 'Connect'}
+                  </Text>
+                </HStack>
+              </MenuButton>
+              <MenuList bg={bgColor} borderColor={borderColor}>
+                {address ? (
+                  <>
+                    <Box p={3}>
+                      <VStack align="start" spacing={2}>
+                        <HStack spacing={2}>
+                          <Text color="white" fontWeight="bold">
+                            {profileData.name}
+                          </Text>
+                          {profileData.badges.map((badge, index) => (
+                            <Badge key={index} colorScheme={badge.color} fontSize="xs">
+                              {badge.name}
+                            </Badge>
+                          ))}
+                        </HStack>
+                        <Text color="brand.lightGray" fontSize="sm">
+                          {address.slice(0, 6)}...{address.slice(-4)}
+                        </Text>
+                        <Text color="brand.lightGray" fontSize="sm">
+                          {profileData.bio}
+                        </Text>
+                        <Text color="brand.lightGray" fontSize="xs">
+                          Joined {profileData.joinedDate}
+                        </Text>
+                        <HStack spacing={4} pt={2}>
+                          <VStack align="start" spacing={0}>
+                            <Text color="white" fontSize="sm" fontWeight="bold">
+                              {profileData.balance}
+                            </Text>
+                            <Text color="brand.lightGray" fontSize="xs">
+                              Balance
+                            </Text>
+                          </VStack>
+                          <VStack align="start" spacing={0}>
+                            <Text color="white" fontSize="sm" fontWeight="bold">
+                              {profileData.collections}
+                            </Text>
+                            <Text color="brand.lightGray" fontSize="xs">
+                              Collections
+                            </Text>
+                          </VStack>
+                          <VStack align="start" spacing={0}>
+                            <Text color="white" fontSize="sm" fontWeight="bold">
+                              {profileData.followers}
+                            </Text>
+                            <Text color="brand.lightGray" fontSize="xs">
+                              Followers
+                            </Text>
+                          </VStack>
+                        </HStack>
+                        <Box w="full" pt={2}>
+                          <Text color="white" fontSize="sm" fontWeight="bold" mb={2}>
+                            Recent Activity
+                          </Text>
+                          <VStack align="start" spacing={2}>
+                            {profileData.recentActivity.map((activity, index) => (
+                              <HStack key={index} spacing={2} w="full">
+                                <Badge
+                                  colorScheme={
+                                    activity.type === 'mint'
+                                      ? 'green'
+                                      : activity.type === 'sale'
+                                      ? 'blue'
+                                      : 'purple'
+                                  }
+                                  fontSize="xs"
+                                >
+                                  {activity.type}
+                                </Badge>
+                                <Text color="white" fontSize="xs" flex={1}>
+                                  {activity.title}
+                                </Text>
+                                <Text color="brand.lightGray" fontSize="xs">
+                                  {activity.value}
+                                </Text>
+                              </HStack>
+                            ))}
+                          </VStack>
+                        </Box>
+                      </VStack>
+                    </Box>
+                    <MenuDivider borderColor={borderColor} />
+                    <MenuItem
+                      icon={<FaUser />}
+                      _hover={{ bg: 'brand.darkerGray' }}
+                      color="white"
+                    >
+                      View Profile
+                    </MenuItem>
+                    <MenuItem
+                      icon={<FaCog />}
+                      _hover={{ bg: 'brand.darkerGray' }}
+                      color="white"
+                    >
+                      Settings
+                    </MenuItem>
+                    <MenuDivider borderColor={borderColor} />
+                    <MenuItem
+                      icon={<FaSignOutAlt />}
+                      _hover={{ bg: 'brand.darkerGray' }}
+                      color="white"
+                    >
+                      Disconnect
+                    </MenuItem>
+                  </>
+                ) : (
+                  <>
+                    <Box p={3}>
+                      <VStack align="start" spacing={2}>
+                        <Text color="white" fontWeight="bold">
+                          Welcome to Sellene
+                        </Text>
+                        <Text color="brand.lightGray" fontSize="sm">
+                          Connect your wallet to access all features
+                        </Text>
+                      </VStack>
+                    </Box>
+                    <MenuDivider borderColor={borderColor} />
+                    <MenuItem
+                      onClick={handleAuth}
+                      icon={<FaUser />}
+                      _hover={{ bg: 'brand.darkerGray' }}
+                      color="brand.blue"
+                      fontWeight="bold"
+                    >
+                      Connect Wallet
+                    </MenuItem>
+                  </>
+                )}
+              </MenuList>
+            </Menu>
+
+            {/* Mobile Menu Button */}
+            <Button
+              display={{ base: 'flex', lg: 'none' }}
+              variant="ghost"
+              onClick={onOpen}
+              _hover={{ bg: 'brand.darkerGray' }}
+              _active={{ bg: 'brand.darkerGray' }}
+            >
+              <FaBars color="white" />
             </Button>
           </HStack>
-
-          {/* Mobile Connect Button */}
-          <Button
-            display={{ base: 'flex', md: 'none' }}
-            onClick={handleAuth}
-            isLoading={loading}
-            bg="brand.blue"
-            color="white"
-            _hover={{ bg: 'brand.blueHover' }}
-            borderRadius="full"
-            px={4}
-          >
-            {displayAddress}
-          </Button>
         </Flex>
       </Container>
 
-      {/* Mobile Menu Drawer */}
-      <Drawer isOpen={isOpen} placement="left" onClose={onClose}>
+      {/* Mobile Drawer */}
+      <Drawer isOpen={isOpen} placement="right" onClose={onClose}>
         <DrawerOverlay />
         <DrawerContent bg={bgColor}>
           <DrawerCloseButton color="white" />
           <DrawerHeader borderBottomWidth="1px" borderColor={borderColor}>
-            <HStack spacing={2}>
-              <Image src={selleneLogo} h="40px" alt="Sellene Logo" />
-              <Text color="white" fontSize="xl" fontWeight="bold">
-                Sellene
-              </Text>
-            </HStack>
+            Menu
           </DrawerHeader>
           <DrawerBody>
-            <VStack spacing={4} align="stretch" mt={4}>
+            <VStack spacing={4} align="stretch">
               {navItems.map((item) => (
                 <RouterLink key={item.path} to={item.path} onClick={onClose}>
                   <Text
                     color={isActive(item.path) ? 'white' : 'brand.lightGray'}
-                    _hover={{ color: 'white' }}
                     fontWeight={isActive(item.path) ? 'bold' : 'normal'}
-                    py={2}
+                    _hover={{ color: 'white' }}
                   >
                     {item.name}
                   </Text>

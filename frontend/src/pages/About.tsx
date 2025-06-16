@@ -24,8 +24,6 @@ import { Link as RouterLink, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import AnimatedPage from '../components/AnimatedPage'
 import { keyframes } from '@emotion/react'
-import { useAccount } from 'wagmi'
-import { useConnectModal } from '@tomo-inc/tomo-evm-kit'
 
 const MotionBox = motion(Box)
 
@@ -53,29 +51,17 @@ const About = () => {
   const navigate = useNavigate()
   const toast = useToast()
   const [blue, purple] = useToken('colors', ['brand.blue', 'brand.purple'])
-  const { address, isConnected } = useAccount()
-  const { openConnectModal } = useConnectModal()
 
   const handleArtistClick = async () => {
     try {
-      if (!isConnected) {
-        if (openConnectModal) {
-          await openConnectModal()
-        } else {
-          toast({
-            title: "Error",
-            description: "Wallet connection is not available",
-            status: "error",
-            duration: 5000,
-            isClosable: true,
-          })
-          return
-        }
-      }
-      
-      // Navigate to registration page
-      navigate('/register-ip')
-      
+      // TODO: Implement wallet connection
+      toast({
+        title: "Connect Wallet",
+        description: "Please connect your wallet to join as an artist",
+        status: "info",
+        duration: 5000,
+        isClosable: true,
+      })
     } catch (error) {
       toast({
         title: "Error",

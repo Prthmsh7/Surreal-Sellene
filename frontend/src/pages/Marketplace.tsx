@@ -50,10 +50,20 @@ import {
   Switch,
   FormControl,
   FormLabel,
+  Textarea,
+  FormHelperText,
+  Tabs,
+  TabList,
+  TabPanels,
+  Tab,
+  TabPanel,
+  IconButton,
 } from '@chakra-ui/react'
-import { FaEthereum, FaClock, FaFire, FaChartLine, FaUsers, FaLock, FaShare, FaFilter, FaSort, FaSearch, FaTimes } from 'react-icons/fa'
+import { FaEthereum, FaClock, FaFire, FaChartLine, FaUsers, FaLock, FaShare, FaFilter, FaSort, FaSearch, FaTimes, FaCopyright, FaFileUpload, FaFileAudio, FaFilePdf, FaFileVideo, FaFileImage, FaTrash } from 'react-icons/fa'
 import AnimatedPage from '../components/AnimatedPage'
-import { useState, memo, useMemo } from 'react'
+import { useState, memo, useMemo, useEffect, useCallback } from 'react'
+import { useAccount } from 'wagmi'
+import tempIPDatabase, { type IPData } from '../utils/tempDatabase'
 
 // Memoized Collection Card
 const CollectionCard = memo(({ collection, onOpen }) => {
@@ -137,12 +147,12 @@ const CollectionCard = memo(({ collection, onOpen }) => {
   )
 })
 
-const BuySharesModal = ({ isOpen, onClose, collection }) => {
+const BuySharesModal = ({ isOpen, onClose, collection, onBuy }) => {
   const [shares, setShares] = useState(1)
   const toast = useToast()
 
   const handleBuy = () => {
-    // TODO: Implement actual purchase logic
+    onBuy(shares)
     toast({
       title: "Purchase Successful",
       description: `You have purchased ${shares} shares of ${collection.title}`,
@@ -150,7 +160,6 @@ const BuySharesModal = ({ isOpen, onClose, collection }) => {
       duration: 5000,
       isClosable: true,
     })
-    onClose()
   }
 
   return (
@@ -220,6 +229,459 @@ const BuySharesModal = ({ isOpen, onClose, collection }) => {
               isDisabled={shares < 1}
             >
               Buy Shares
+            </Button>
+          </VStack>
+        </ModalBody>
+      </ModalContent>
+    </Modal>
+  )
+}
+
+const IPRegistrationModal = ({ isOpen, onClose, onIPRegistered }) => {
+  const { address } = useAccount()
+  const [activeTab, setActiveTab] = useState(0)
+  const [formData, setFormData] = useState({
+    title: '',
+    description: '',
+    category: '',
+    price: '',
+    totalShares: '',
+    files: {
+      audio: null,
+      pdf: null,
+      video: null,
+      images: [],
+    },
+    legalDocument: '',
+  })
+  const toast = useToast()
+
+  const handleSubmit = () => {
+    if (!address) {
+      toast({
+        title: "Error",
+        description: "Please connect your wallet first",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      })
+      return
+    }
+
+    // Validate required fields
+    if (!formData.title || !formData.description || !formData.category || !formData.price || !formData.totalShares) {
+      toast({
+        title: "Error",
+        description: "Please fill in all required fields",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      })
+      return
+    }
+
+    try {
+      // Create new IP in the database
+      const newIP = tempIPDatabase.createIP({
+        title: formData.title,
+        description: formData.description,
+        category: formData.category,
+        price: parseFloat(formData.price),
+        totalShares: parseInt(formData.totalShares),
+        files: formData.files,
+        legalDocument: formData.legalDocument,
+        creator: address,
+      })
+
+      // Create a new collection card
+      const newCollection = {
+        id: newIP.id,
+        title: newIP.title,
+        description: newIP.description,
+        image: newIP.files.images && newIP.files.images.length > 0 
+          ? URL.createObjectURL(newIP.files.images[0]) 
+          : 'https://via.placeholder.com/400x300',
+        category: newIP.category,
+        price: newIP.price,
+        owners: newIP.owners,
+        total: newIP.totalShares,
+        sold: newIP.soldShares
+      }
+
+      // Notify parent component to update the marketplace
+      onIPRegistered(newCollection)
+
+      toast({
+        title: "IP Registration Successful",
+        description: "Your IP has been registered successfully",
+        status: "success",
+        duration: 5000,
+        isClosable: true,
+      })
+
+      // Reset form
+      setFormData({
+        title: '',
+        description: '',
+        category: '',
+        price: '',
+        totalShares: '',
+        files: {
+          audio: null,
+          pdf: null,
+          video: null,
+          images: [],
+        },
+        legalDocument: '',
+      })
+
+      onClose()
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to register IP",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      })
+    }
+  }
+
+  const handleFileChange = (type, files) => {
+    if (!files || files.length === 0) return;
+
+    if (type === 'images') {
+      setFormData(prev => ({
+        ...prev,
+        files: {
+          ...prev.files,
+          images: [...prev.files.images, ...Array.from(files)]
+        }
+      }))
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        files: {
+          ...prev.files,
+          [type]: files[0]
+        }
+      }))
+    }
+  }
+
+  const removeFile = (type, index) => {
+    if (type === 'images') {
+      setFormData(prev => ({
+        ...prev,
+        files: {
+          ...prev.files,
+          images: prev.files.images.filter((_, i) => i !== index)
+        }
+      }))
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        files: {
+          ...prev.files,
+          [type]: null
+        }
+      }))
+    }
+  }
+
+  const FileUploadSection = () => (
+    <VStack spacing={6} align="stretch">
+      <Heading size="md" color="white">Upload IP Files</Heading>
+      <Tabs 
+        variant="soft-rounded" 
+        colorScheme="blue" 
+        index={activeTab}
+        onChange={setActiveTab}
+      >
+        <TabList>
+          <Tab color="white">Audio</Tab>
+          <Tab color="white">PDF</Tab>
+          <Tab color="white">Video</Tab>
+          <Tab color="white">Images</Tab>
+        </TabList>
+
+        <TabPanels>
+          <TabPanel>
+            <VStack spacing={4} align="stretch">
+              <FormControl>
+                <FormLabel color="white">Audio File</FormLabel>
+                <Input
+                  type="file"
+                  accept="audio/*"
+                  onChange={(e) => handleFileChange('audio', e.target.files)}
+                  display="none"
+                  id="audio-upload"
+                />
+                <Button
+                  as="label"
+                  htmlFor="audio-upload"
+                  leftIcon={<FaFileAudio />}
+                  variant="outline"
+                  colorScheme="blue"
+                  w="full"
+                >
+                  Upload Audio
+                </Button>
+                {formData.files.audio && (
+                  <HStack justify="space-between" bg="brand.darkGray" p={2} borderRadius="md">
+                    <HStack>
+                      <FaFileAudio color="brand.blue" />
+                      <Text color="white">{formData.files.audio.name}</Text>
+                    </HStack>
+                    <IconButton
+                      icon={<FaTrash />}
+                      colorScheme="red"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => removeFile('audio')}
+                    />
+                  </HStack>
+                )}
+              </FormControl>
+            </VStack>
+          </TabPanel>
+
+          <TabPanel>
+            <VStack spacing={4} align="stretch">
+              <FormControl>
+                <FormLabel color="white">PDF Document</FormLabel>
+                <Input
+                  type="file"
+                  accept=".pdf"
+                  onChange={(e) => handleFileChange('pdf', e.target.files)}
+                  display="none"
+                  id="pdf-upload"
+                />
+                <Button
+                  as="label"
+                  htmlFor="pdf-upload"
+                  leftIcon={<FaFilePdf />}
+                  variant="outline"
+                  colorScheme="blue"
+                  w="full"
+                >
+                  Upload PDF
+                </Button>
+                {formData.files.pdf && (
+                  <HStack justify="space-between" bg="brand.darkGray" p={2} borderRadius="md">
+                    <HStack>
+                      <FaFilePdf color="brand.blue" />
+                      <Text color="white">{formData.files.pdf.name}</Text>
+                    </HStack>
+                    <IconButton
+                      icon={<FaTrash />}
+                      colorScheme="red"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => removeFile('pdf')}
+                    />
+                  </HStack>
+                )}
+              </FormControl>
+            </VStack>
+          </TabPanel>
+
+          <TabPanel>
+            <VStack spacing={4} align="stretch">
+              <FormControl>
+                <FormLabel color="white">Video File</FormLabel>
+                <Input
+                  type="file"
+                  accept="video/*"
+                  onChange={(e) => handleFileChange('video', e.target.files)}
+                  display="none"
+                  id="video-upload"
+                />
+                <Button
+                  as="label"
+                  htmlFor="video-upload"
+                  leftIcon={<FaFileVideo />}
+                  variant="outline"
+                  colorScheme="blue"
+                  w="full"
+                >
+                  Upload Video
+                </Button>
+                {formData.files.video && (
+                  <HStack justify="space-between" bg="brand.darkGray" p={2} borderRadius="md">
+                    <HStack>
+                      <FaFileVideo color="brand.blue" />
+                      <Text color="white">{formData.files.video.name}</Text>
+                    </HStack>
+                    <IconButton
+                      icon={<FaTrash />}
+                      colorScheme="red"
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => removeFile('video')}
+                    />
+                  </HStack>
+                )}
+              </FormControl>
+            </VStack>
+          </TabPanel>
+
+          <TabPanel>
+            <VStack spacing={4} align="stretch">
+              <FormControl>
+                <FormLabel color="white">Images</FormLabel>
+                <Input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={(e) => handleFileChange('images', e.target.files)}
+                  display="none"
+                  id="images-upload"
+                />
+                <Button
+                  as="label"
+                  htmlFor="images-upload"
+                  leftIcon={<FaFileImage />}
+                  variant="outline"
+                  colorScheme="blue"
+                  w="full"
+                >
+                  Upload Images
+                </Button>
+                <VStack spacing={2} mt={2}>
+                  {formData.files.images.map((file, index) => (
+                    <HStack key={index} justify="space-between" bg="brand.darkGray" p={2} borderRadius="md" w="full">
+                      <HStack>
+                        <FaFileImage color="brand.blue" />
+                        <Text color="white">{file.name}</Text>
+                      </HStack>
+                      <IconButton
+                        icon={<FaTrash />}
+                        colorScheme="red"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => removeFile('images', index)}
+                      />
+                    </HStack>
+                  ))}
+                </VStack>
+              </FormControl>
+            </VStack>
+          </TabPanel>
+        </TabPanels>
+      </Tabs>
+    </VStack>
+  )
+
+  return (
+    <Modal isOpen={isOpen} onClose={onClose} size="xl">
+      <ModalOverlay backdropFilter="blur(10px)" />
+      <ModalContent bg="brand.darkerGray" border="1px" borderColor="brand.lightGray">
+        <ModalHeader color="white" fontFamily="heading">Register New IP</ModalHeader>
+        <ModalCloseButton color="white" />
+        <ModalBody pb={6}>
+          <VStack spacing={6} align="stretch">
+            <FormControl isRequired>
+              <FormLabel color="white">IP Title</FormLabel>
+              <Input
+                placeholder="Enter IP title"
+                value={formData.title}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                bg="brand.darkGray"
+                color="white"
+                borderColor="brand.lightGray"
+              />
+            </FormControl>
+
+            <FormControl isRequired>
+              <FormLabel color="white">Description</FormLabel>
+              <Textarea
+                placeholder="Describe your IP"
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                bg="brand.darkGray"
+                color="white"
+                borderColor="brand.lightGray"
+              />
+            </FormControl>
+
+            <FormControl isRequired>
+              <FormLabel color="white">Category</FormLabel>
+              <Select
+                placeholder="Select category"
+                value={formData.category}
+                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                bg="brand.darkGray"
+                color="white"
+                borderColor="brand.lightGray"
+              >
+                <option value="art">Art</option>
+                <option value="music">Music</option>
+                <option value="literature">Literature</option>
+                <option value="technology">Technology</option>
+                <option value="other">Other</option>
+              </Select>
+            </FormControl>
+
+            <HStack spacing={4}>
+              <FormControl isRequired>
+                <FormLabel color="white">Price per Share (ETH)</FormLabel>
+                <NumberInput
+                  min={0}
+                  value={formData.price}
+                  onChange={(value) => setFormData({ ...formData, price: value })}
+                >
+                  <NumberInputField bg="brand.darkGray" color="white" borderColor="brand.lightGray" />
+                  <NumberInputStepper>
+                    <NumberIncrementStepper color="white" />
+                    <NumberDecrementStepper color="white" />
+                  </NumberInputStepper>
+                </NumberInput>
+              </FormControl>
+
+              <FormControl isRequired>
+                <FormLabel color="white">Total Shares</FormLabel>
+                <NumberInput
+                  min={1}
+                  value={formData.totalShares}
+                  onChange={(value) => setFormData({ ...formData, totalShares: value })}
+                >
+                  <NumberInputField bg="brand.darkGray" color="white" borderColor="brand.lightGray" />
+                  <NumberInputStepper>
+                    <NumberIncrementStepper color="white" />
+                    <NumberDecrementStepper color="white" />
+                  </NumberInputStepper>
+                </NumberInput>
+              </FormControl>
+            </HStack>
+
+            <Divider borderColor="brand.lightGray" />
+
+            <FileUploadSection />
+
+            <FormControl isRequired>
+              <FormLabel color="white">Legal Document URL</FormLabel>
+              <Input
+                placeholder="Enter legal document URL"
+                value={formData.legalDocument}
+                onChange={(e) => setFormData({ ...formData, legalDocument: e.target.value })}
+                bg="brand.darkGray"
+                color="white"
+                borderColor="brand.lightGray"
+              />
+              <FormHelperText color="brand.lightGray">
+                Upload your IP registration document to IPFS and paste the URL here
+              </FormHelperText>
+            </FormControl>
+
+            <Button
+              colorScheme="blue"
+              size="lg"
+              onClick={handleSubmit}
+              leftIcon={<FaCopyright />}
+              isDisabled={!formData.title || !formData.description || !formData.category || !formData.price || !formData.totalShares || !formData.legalDocument}
+            >
+              Register IP
             </Button>
           </VStack>
         </ModalBody>
@@ -425,31 +887,41 @@ const FilterSidebar = ({ isOpen, onClose, filters, setFilters, categories }) => 
   )
 }
 
-const FilterBar = ({ onOpen }) => {
+const FilterBar = ({ onOpen, onIPRegistered }) => {
+  const { isOpen: isIPModalOpen, onOpen: onIPModalOpen, onClose: onIPModalClose } = useDisclosure()
+  
   return (
-    <HStack spacing={4} wrap="wrap">
-      <InputGroup maxW="300px">
-        <InputLeftElement pointerEvents="none">
-          <Icon as={FaSearch} color="brand.lightGray" />
-        </InputLeftElement>
-        <Input
-          placeholder="Search collections..."
-          bg="brand.darkerGray"
-          borderColor="brand.lightGray"
-          color="white"
-          _placeholder={{ color: 'brand.lightGray' }}
-        />
-      </InputGroup>
-
+    <Flex justify="space-between" align="center" mb={6}>
+      <HStack spacing={4}>
+        <Button
+          leftIcon={<FaFilter />}
+          variant="outline"
+          colorScheme="blue"
+          onClick={onOpen}
+        >
+          Filters
+        </Button>
+        <Button
+          leftIcon={<FaSort />}
+          variant="outline"
+          colorScheme="blue"
+        >
+          Sort
+        </Button>
+      </HStack>
       <Button
-        leftIcon={<FaFilter />}
-        variant="outline"
+        leftIcon={<FaCopyright />}
         colorScheme="blue"
-        onClick={onOpen}
+        onClick={onIPModalOpen}
       >
-        Filters
+        Register IP
       </Button>
-    </HStack>
+      <IPRegistrationModal 
+        isOpen={isIPModalOpen} 
+        onClose={onIPModalClose} 
+        onIPRegistered={onIPRegistered}
+      />
+    </Flex>
   )
 }
 
@@ -457,6 +929,7 @@ const Marketplace = () => {
   const { isOpen: isFilterOpen, onOpen: onFilterOpen, onClose: onFilterClose } = useDisclosure()
   const { isOpen: isModalOpen, onOpen: onModalOpen, onClose: onModalClose } = useDisclosure()
   const [selectedCollection, setSelectedCollection] = useState(null)
+  const [collections, setCollections] = useState([])
   const [filters, setFilters] = useState({
     search: '',
     trending: false,
@@ -469,110 +942,38 @@ const Marketplace = () => {
     categories: []
   })
 
-  // Dummy data for collections
-  const collections = [
-    {
-      id: 1,
-      title: "Digital Dreams",
-      description: "A collection of futuristic digital art pieces exploring the intersection of technology and creativity.",
-      image: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1064&q=80",
-      category: "Digital Art",
-      price: 0.5,
-      owners: 45,
-      total: 100,
-      sold: 55
-    },
-    {
-      id: 2,
-      title: "Abstract Emotions",
-      description: "An emotional journey through abstract art, capturing the essence of human feelings in digital form.",
-      image: "https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1045&q=80",
-      category: "Abstract",
-      price: 0.3,
-      owners: 78,
-      total: 200,
-      sold: 122
-    },
-    {
-      id: 3,
-      title: "Pixel Paradise",
-      description: "A nostalgic journey through pixel art, bringing retro gaming aesthetics to the modern digital age.",
-      image: "https://images.unsplash.com/photo-1618005198919-d3d4b5a92ead?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1074&q=80",
-      category: "Pixel Art",
-      price: 0.2,
-      owners: 120,
-      total: 150,
-      sold: 30
-    },
-    {
-      id: 4,
-      title: "Neural Networks",
-      description: "AI-generated art exploring the boundaries between human creativity and machine learning.",
-      image: "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1074&q=80",
-      category: "AI Art",
-      price: 0.8,
-      owners: 32,
-      total: 80,
-      sold: 48
-    },
-    {
-      id: 5,
-      title: "Cosmic Journey",
-      description: "Space-themed digital art collection featuring stunning cosmic landscapes and celestial bodies.",
-      image: "https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1074&q=80",
-      category: "Space Art",
-      price: 0.4,
-      owners: 95,
-      total: 120,
-      sold: 25
-    },
-    {
-      id: 6,
-      title: "Digital Portraits",
-      description: "A collection of unique digital portraits blending traditional art techniques with modern technology.",
-      image: "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1074&q=80",
-      category: "Portraits",
-      price: 0.6,
-      owners: 65,
-      total: 90,
-      sold: 25
-    },
-    {
-      id: 7,
-      title: "Cyberpunk City",
-      description: "Futuristic cityscapes and neon-lit urban environments in a cyberpunk aesthetic.",
-      image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1074&q=80",
-      category: "Cyberpunk",
-      price: 0.7,
-      owners: 88,
-      total: 110,
-      sold: 22
-    },
-    {
-      id: 8,
-      title: "Nature's Code",
-      description: "Digital art exploring the mathematical patterns and algorithms found in nature.",
-      image: "https://images.unsplash.com/photo-1618005198919-d3d4b5a92ead?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1074&q=80",
-      category: "Generative",
-      price: 0.45,
-      owners: 72,
-      total: 95,
-      sold: 23
-    },
-    {
-      id: 9,
-      title: "Digital Sculptures",
-      description: "3D digital sculptures pushing the boundaries of form and space in the digital realm.",
-      image: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1064&q=80",
-      category: "3D Art",
-      price: 0.9,
-      owners: 42,
-      total: 70,
-      sold: 28
-    }
-  ]
+  // Function to format IP data
+  const formatIPData = (ips) => {
+    return ips.map(ip => ({
+      id: ip.id,
+      title: ip.title,
+      description: ip.description,
+      image: ip.files.images && ip.files.images.length > 0 
+        ? URL.createObjectURL(ip.files.images[0]) 
+        : 'https://via.placeholder.com/400x300',
+      category: ip.category,
+      price: ip.price,
+      owners: ip.owners,
+      total: ip.totalShares,
+      sold: ip.soldShares
+    }))
+  }
 
-  // Get unique categories
+  // Load IPs from temporary database
+  const loadIPs = useCallback(() => {
+    const ips = tempIPDatabase.getAllIPs()
+    const formattedIPs = formatIPData(ips)
+    setCollections(formattedIPs)
+  }, [])
+
+  // Initial load and setup refresh interval
+  useEffect(() => {
+    loadIPs()
+    const interval = setInterval(loadIPs, 5000)
+    return () => clearInterval(interval)
+  }, [loadIPs])
+
+  // Get unique categories from IPs
   const categories = useMemo(() => {
     return [...new Set(collections.map(collection => collection.category))]
   }, [collections])
@@ -629,6 +1030,19 @@ const Marketplace = () => {
     onModalOpen()
   }
 
+  const handleBuy = (shares) => {
+    if (selectedCollection) {
+      tempIPDatabase.updateShares(selectedCollection.id, shares)
+      loadIPs() // Refresh collections after purchase
+      onModalClose()
+    }
+  }
+
+  const handleIPRegistered = (newCollection) => {
+    // Add the new collection to the existing collections
+    setCollections(prevCollections => [newCollection, ...prevCollections])
+  }
+
   return (
     <AnimatedPage>
       <Box minH="100vh" bg="brand.darkGray" pt="80px">
@@ -643,7 +1057,7 @@ const Marketplace = () => {
             </VStack>
 
             {/* Filters */}
-            <FilterBar onOpen={onFilterOpen} />
+            <FilterBar onOpen={onFilterOpen} onIPRegistered={handleIPRegistered} />
 
             {/* Featured Collections */}
             <VStack spacing={6} align="stretch">
@@ -679,6 +1093,7 @@ const Marketplace = () => {
         isOpen={isModalOpen} 
         onClose={onModalClose} 
         collection={selectedCollection}
+        onBuy={handleBuy}
       />
     </AnimatedPage>
   )

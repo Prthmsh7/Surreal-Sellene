@@ -5,6 +5,9 @@ import {
   Text,
   Link,
   useColorModeValue,
+  useBreakpointValue,
+  Collapse,
+  useDisclosure,
   Button,
   Divider,
 } from '@chakra-ui/react'
@@ -21,14 +24,12 @@ import { motion } from 'framer-motion'
 
 const MotionBox = motion(Box)
 
-interface SidebarProps {
-  onClose?: () => void
-}
-
-const Sidebar = ({ onClose }: SidebarProps) => {
+const Sidebar = () => {
   const location = useLocation()
   const bgColor = useColorModeValue('brand.darkGray', 'brand.darkGray')
   const borderColor = useColorModeValue('brand.lightGray', 'brand.lightGray')
+  const isMobile = useBreakpointValue({ base: true, md: false })
+  const { isOpen, onToggle } = useDisclosure()
 
   const navItems = [
     {
@@ -68,31 +69,20 @@ const Sidebar = ({ onClose }: SidebarProps) => {
     },
   ]
 
-  const handleClick = (path: string | null) => {
-    if (path && onClose) {
-      onClose()
-    }
-  }
-
   return (
     <Box
       as="nav"
-      h="calc(100vh - 80px)"
+      position="fixed"
+      left={0}
+      top={0}
+      bottom={0}
+      w={{ base: "full", md: "240px" }}
       bg={bgColor}
+      borderRight="1px"
+      borderColor={borderColor}
       py={4}
-      overflowY="auto"
-      css={{
-        '&::-webkit-scrollbar': {
-          width: '4px',
-        },
-        '&::-webkit-scrollbar-track': {
-          width: '6px',
-        },
-        '&::-webkit-scrollbar-thumb': {
-          background: 'brand.lightGray',
-          borderRadius: '24px',
-        },
-      }}
+      zIndex="sticky"
+      display={{ base: isOpen ? "block" : "none", md: "block" }}
     >
       <VStack spacing={2} align="stretch" px={4}>
         {navItems.map((item, index) => {
@@ -120,7 +110,6 @@ const Sidebar = ({ onClose }: SidebarProps) => {
               as={RouterLink}
               to={item.path}
               _hover={{ textDecoration: 'none' }}
-              onClick={() => handleClick(item.path)}
             >
               <MotionBox
                 whileHover={{ x: 4 }}
@@ -137,7 +126,6 @@ const Sidebar = ({ onClose }: SidebarProps) => {
                     bg: 'whiteAlpha.200',
                   }}
                   size="lg"
-                  px={4}
                 >
                   <Text>{item.label}</Text>
                 </Button>
