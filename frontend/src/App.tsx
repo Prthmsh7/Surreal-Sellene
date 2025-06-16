@@ -1,7 +1,6 @@
 import React, { Suspense, lazy } from 'react';
-import { ChakraProvider } from '@chakra-ui/react';
+import { ChakraProvider, Spinner, Center, CenterProps, SpinnerProps } from '@chakra-ui/react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { Spinner, Center } from '@chakra-ui/react';
 import { Navbar } from './components/Navbar';
 import { AuthProvider } from './contexts/AuthContext';
 import { StoryProtocolProvider } from './providers/StoryProtocolProvider';
@@ -30,7 +29,7 @@ const Breakdown = lazy(() => import('./pages/Breakdown'));
 const Daily = lazy(() => import('./pages/Daily'));
 
 // Fallback loading spinner
-const LoadingSpinner = () => (
+const LoadingSpinner: React.FC = () => (
   <Center h="100vh">
     <Spinner
       thickness="4px"
@@ -42,7 +41,7 @@ const LoadingSpinner = () => (
   </Center>
 );
 
-const App = () => {
+const App: React.FC = () => {
   return (
     <ChakraProvider theme={theme}>
       <WagmiConfig config={config}>
