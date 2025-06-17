@@ -7,7 +7,7 @@ export default defineConfig({
   plugins: [
     react(),
     nodePolyfills({
-      include: ['buffer', 'crypto', 'stream', 'util'],
+      include: ['path', 'crypto', 'buffer', 'stream', 'util', 'process'],
       globals: {
         Buffer: true,
         global: true,
@@ -18,6 +18,10 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': '/src',
+      process: 'process/browser',
+      stream: 'stream-browserify',
+      zlib: 'browserify-zlib',
+      util: 'util',
     },
   },
   server: {

@@ -1,111 +1,115 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { useAuth } from './AuthContext';
-import { mainnet } from 'wagmi/chains';
+import { useToast } from '@chakra-ui/react';
+import { useAccount } from 'wagmi';
 
-interface IP {
-  id: string;
-  name: string;
-  description: string;
-  image: string;
-  attributes: Array<{
-    trait_type: string;
-    value: string;
-  }>;
+interface RegisterIPResponse {
+  ipId: string;
+  tokenId: string;
+  success: boolean;
 }
 
 interface StoryContextType {
-  loading: boolean;
-  error: string | null;
-  registeredIPs: Array<{ ipId: string; title: string; description: string }>;
+  registeredIPs: Array<{ ipId: string; title: string; description: string; mediaUrl: string }>;
   refreshIPs: () => Promise<void>;
-  registerIP: (title: string, description: string, mediaUrl: string) => Promise<string>;
+  registerIP: (name: string, description: string, mediaUrl: string) => Promise<RegisterIPResponse>;
+  isLoading: boolean;
 }
 
 const defaultContext: StoryContextType = {
-  loading: false,
-  error: null,
   registeredIPs: [],
   refreshIPs: async () => {},
-  registerIP: async () => ''
+  registerIP: async () => ({ ipId: '', tokenId: '', success: false }),
+  isLoading: false
 };
 
 const StoryContext = createContext<StoryContextType>(defaultContext);
 
 export function StoryProvider({ children }: { children: React.ReactNode }) {
-  const { address } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [registeredIPs, setRegisteredIPs] = useState<Array<{ ipId: string; title: string; description: string }>>([]);
-
-  useEffect(() => {
-    if (address) {
-      refreshIPs();
-    }
-  }, [address]);
+  const [registeredIPs, setRegisteredIPs] = useState<Array<{ ipId: string; title: string; description: string; mediaUrl: string }>>([]);
+  const toast = useToast();
+  const { address } = useAccount();
 
   const refreshIPs = async () => {
-    if (!address) return;
-    
-    try {
-      setLoading(true);
-      setError(null);
-
-      // Format IP ID based on wallet address
-      const ipId = `story:${address.toLowerCase()}`;
-      
-      // For now, we'll just show the wallet's IP
-      setRegisteredIPs([{
-        ipId,
-        title: 'My Story Protocol IP',
-        description: 'IP registered on Story Protocol'
-      }]);
-
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch IPs';
-      setError(errorMessage);
-      console.error('Error fetching IPs:', err);
-    } finally {
-      setLoading(false);
-    }
+    // Implement IP refresh logic here
   };
 
-  const registerIP = async (title: string, description: string, mediaUrl: string) => {
-    if (!address) throw new Error('Wallet not connected');
-    
-    try {
-      setLoading(true);
-      setError(null);
+  useEffect(() => {
+    refreshIPs();
+  }, [address]);
 
-      // Format IP ID based on wallet address and timestamp
-      const timestamp = Date.now();
-      const ipId = `story:${address.toLowerCase()}:${timestamp}`;
-      
-      // Add the new IP to the list
+  const registerIP = async (name: string, description: string, mediaUrl: string): Promise<RegisterIPResponse> => {
+    setLoading(true);
+    try {
+      if (!address) {
+        throw new Error('Please connect your wallet first');
+      }
+
+      const response = await fetch('http://localhost:3001/register-ip', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name,
+          description,
+          mediaUrl,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        // Check if the error is related to insufficient funds
+        if (data.error?.includes('insufficient funds') || 
+            data.error?.toLowerCase().includes('exceeds the balance')) {
+          throw new Error('Insufficient funds in your wallet. Please add funds to continue.');
+        }
+        throw new Error(data.error || 'Failed to register IP');
+      }
+
+      toast({
+        title: 'Success',
+        description: 'IP registered successfully',
+        status: 'success',
+        duration: 5000,
+        isClosable: true,
+      });
+
+      // Add the new IP to the local state
       const newIP = {
-        ipId,
-        title,
-        description
+        ipId: data.ipId,
+        title: name,
+        description,
+        mediaUrl
       };
-      
       setRegisteredIPs(prev => [...prev, newIP]);
-      return ipId;
 
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to register IP';
-      setError(errorMessage);
-      console.error('Error registering IP:', err);
-      throw new Error(errorMessage);
+      return {
+        ipId: data.ipId,
+        tokenId: data.tokenId,
+        success: true
+      };
+
+    } catch (error) {
+      toast({
+        title: 'Registration Failed',
+        description: error instanceof Error ? error.message : 'Failed to register IP',
+        status: 'error',
+        duration: 5000,
+        isClosable: true,
+      });
+      throw error;
     } finally {
       setLoading(false);
     }
   };
 
-  const value: StoryContextType = {
-    loading,
-    error,
+  const value = {
     registeredIPs,
     refreshIPs,
-    registerIP
+    registerIP,
+    isLoading: loading
   };
 
   return (
@@ -115,10 +119,10 @@ export function StoryProvider({ children }: { children: React.ReactNode }) {
   );
 }
 
-export const useStory = () => {
+export function useStory() {
   const context = useContext(StoryContext);
   if (context === undefined) {
     throw new Error('useStory must be used within a StoryProvider');
   }
   return context;
-}; 
+} 
