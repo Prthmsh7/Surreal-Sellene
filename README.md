@@ -1,8 +1,6 @@
 # Surreal Sellene - Decentralized IP Marketplace
 
-<video src="diagrams/demo-video.mp4" controls autoplay width="100%">
-  Your browser does not support the video tag.
-</video>
+![Demo Video](https://github.com/user-attachments/assets/08172f8b-b89a-4516-98e4-3a025912d098)
 
 ## The Idea
 
