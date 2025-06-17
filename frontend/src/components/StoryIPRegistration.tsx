@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   Box,
   Button,
@@ -20,7 +20,17 @@ export function StoryIPRegistration() {
   const [description, setDescription] = useState('');
   const [mediaUrl, setMediaUrl] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [uploadedFiles, setUploadedFiles] = useState<{ [key: string]: File | null }>({
+    audio: null,
+    image: null,
+    pdf: null
+  });
   const toast = useToast();
+  const fileInputRefs = {
+    audio: useRef<HTMLInputElement>(null),
+    image: useRef<HTMLInputElement>(null),
+    pdf: useRef<HTMLInputElement>(null)
+  };
 
   // Theme colors
   const bgColor = 'gray.900';
@@ -36,16 +46,19 @@ export function StoryIPRegistration() {
     setIsLoading(true);
 
     try {
+      // Create FormData to handle file uploads
+      const formData = new FormData();
+      formData.append('name', title);
+      formData.append('description', description);
+      
+      // Append files if they exist
+      if (uploadedFiles.audio) formData.append('audio', uploadedFiles.audio);
+      if (uploadedFiles.image) formData.append('image', uploadedFiles.image);
+      if (uploadedFiles.pdf) formData.append('pdf', uploadedFiles.pdf);
+
       const response = await fetch('http://localhost:3001/register-ip', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: title,
-          description,
-          mediaUrl,
-        }),
+        body: formData,
       });
 
       const data = await response.json();
@@ -62,6 +75,11 @@ export function StoryIPRegistration() {
         setTitle('');
         setDescription('');
         setMediaUrl('');
+        setUploadedFiles({
+          audio: null,
+          image: null,
+          pdf: null
+        });
       } else {
         throw new Error(data.error || 'Failed to register IP');
       }
@@ -79,8 +97,32 @@ export function StoryIPRegistration() {
   };
 
   const handleUpload = (type: 'audio' | 'image' | 'pdf') => {
-    // Implement file upload logic here
-    console.log(`Uploading ${type}`);
+    const input = fileInputRefs[type].current;
+    if (input) {
+      input.click();
+    }
+  };
+
+  const handleFileChange = (type: 'audio' | 'image' | 'pdf', event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setUploadedFiles(prev => ({
+        ...prev,
+        [type]: file
+      }));
+      
+      // Create a temporary URL for the file
+      const fileUrl = URL.createObjectURL(file);
+      setMediaUrl(fileUrl);
+      
+      toast({
+        title: 'File Uploaded',
+        description: `${type.charAt(0).toUpperCase() + type.slice(1)} file uploaded successfully`,
+        status: 'success',
+        duration: 3000,
+        isClosable: true,
+      });
+    }
   };
 
   return (
@@ -148,6 +190,27 @@ export function StoryIPRegistration() {
         <Box>
           <Text mb={4} color={labelColor}>Upload Media Files</Text>
           <HStack spacing={4} width="100%">
+            <Input
+              type="file"
+              accept="audio/*"
+              ref={fileInputRefs.audio}
+              onChange={(e) => handleFileChange('audio', e)}
+              display="none"
+            />
+            <Input
+              type="file"
+              accept="image/*"
+              ref={fileInputRefs.image}
+              onChange={(e) => handleFileChange('image', e)}
+              display="none"
+            />
+            <Input
+              type="file"
+              accept=".pdf"
+              ref={fileInputRefs.pdf}
+              onChange={(e) => handleFileChange('pdf', e)}
+              display="none"
+            />
             <Button
               leftIcon={<Icon as={FaFileAudio} />}
               onClick={() => handleUpload('audio')}
@@ -157,7 +220,7 @@ export function StoryIPRegistration() {
               borderColor="blue.400"
               _hover={{ bg: 'blue.400', color: 'white' }}
             >
-              Upload Audio
+              {uploadedFiles.audio ? 'Change Audio' : 'Upload Audio'}
             </Button>
             <Button
               leftIcon={<Icon as={FaFileImage} />}
@@ -168,7 +231,7 @@ export function StoryIPRegistration() {
               borderColor="blue.400"
               _hover={{ bg: 'blue.400', color: 'white' }}
             >
-              Upload Image
+              {uploadedFiles.image ? 'Change Image' : 'Upload Image'}
             </Button>
             <Button
               leftIcon={<Icon as={FaFilePdf} />}
@@ -179,7 +242,7 @@ export function StoryIPRegistration() {
               borderColor="blue.400"
               _hover={{ bg: 'blue.400', color: 'white' }}
             >
-              Upload PDF
+              {uploadedFiles.pdf ? 'Change PDF' : 'Upload PDF'}
             </Button>
           </HStack>
         </Box>

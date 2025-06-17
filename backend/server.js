@@ -1,12 +1,38 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const multer = require('multer');
+const path = require('path');
 const { StoryClient } = require('@story-protocol/core-sdk');
 const { http, createWalletClient, createPublicClient } = require('viem');
 const { privateKeyToAccount } = require('viem/accounts');
 const { aeneid } = require('viem/chains');
 
 const app = express();
+const port = process.env.PORT || 3001;
+
+// Configure multer for file uploads
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/');
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + '-' + file.originalname);
+  }
+});
+
+const upload = multer({ 
+  storage: storage,
+  limits: {
+    fileSize: 10 * 1024 * 1024 // 10MB limit
+  }
+});
+
+// Create uploads directory if it doesn't exist
+const fs = require('fs');
+if (!fs.existsSync('uploads')) {
+  fs.mkdirSync('uploads');
+}
 
 // Middleware
 app.use(express.json());
@@ -16,6 +42,7 @@ app.use(cors({
   credentials: true,
   allowedHeaders: ['Content-Type', 'Authorization']
 }));
+app.use('/uploads', express.static('uploads'));
 
 // Construct RPC URL
 const getRpcUrl = () => {
@@ -73,13 +100,27 @@ console.log('Using NFT contract:', process.env.NFT_CONTRACT_ADDRESS);
 console.log('Wallet address:', process.env.WALLET_ADDRESS);
 console.log('RPC URL:', getRpcUrl());
 
-app.post('/register-ip', async (req, res) => {
+app.post('/register-ip', upload.fields([
+  { name: 'audio', maxCount: 1 },
+  { name: 'image', maxCount: 1 },
+  { name: 'pdf', maxCount: 1 }
+]), async (req, res) => {
   try {
-    const { name, description, mediaUrl } = req.body;
+    const { name, description } = req.body;
+    const files = req.files;
 
     // Validate input
     if (!name || !description) {
       return res.status(400).json({ error: 'Name and description are required' });
+    }
+
+    // Get the first uploaded file URL if any
+    let mediaUrl = '';
+    if (files) {
+      const firstFile = Object.values(files)[0]?.[0];
+      if (firstFile) {
+        mediaUrl = `${req.protocol}://${req.get('host')}/uploads/${firstFile.filename}`;
+      }
     }
 
     const metadata = {
@@ -130,7 +171,6 @@ app.get('/health', (req, res) => {
   res.json({ status: 'healthy' });
 });
 
-const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+app.listen(port, () => {
+  console.log(`Server running on port ${port}`);
 }); 
