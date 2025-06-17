@@ -14,6 +14,7 @@ const theme = extendTheme({
       blue: '#1DA1F2',
       black: '#000000',
       darkGray: '#14171A',
+      darkerGray: '#0D1117',
       lightGray: '#657786',
       extraLightGray: '#AAB8C2',
       white: '#FFFFFF',
@@ -23,7 +24,7 @@ const theme = extendTheme({
   styles: {
     global: {
       body: {
-        bg: 'brand.black',
+        bg: 'brand.darkerGray',
         color: 'white',
       },
     },
@@ -72,56 +73,54 @@ const theme = extendTheme({
       },
     },
     Input: {
-      baseStyle: {
-        field: {
-          bg: 'brand.darkGray',
-          borderColor: 'brand.lightGray',
-          transition: 'all 0.2s',
-          _hover: {
-            borderColor: 'brand.blue',
-            transform: 'translateY(-1px)',
-          },
-          _focus: {
-            borderColor: 'brand.blue',
-            boxShadow: 'none',
-            transform: 'translateY(-1px)',
+      variants: {
+        filled: {
+          field: {
+            bg: 'brand.darkGray',
+            borderColor: 'brand.lightGray',
+            color: 'white',
+            _hover: {
+              bg: 'brand.darkGray',
+              borderColor: 'brand.blue',
+            },
+            _focus: {
+              bg: 'brand.darkGray',
+              borderColor: 'brand.blue',
+              boxShadow: '0 0 0 1px var(--chakra-colors-brand-blue)',
+            },
           },
         },
       },
-    },
-    Select: {
-      baseStyle: {
-        field: {
-          bg: 'brand.darkGray',
-          borderColor: 'brand.lightGray',
-          transition: 'all 0.2s',
-          _hover: {
-            borderColor: 'brand.blue',
-            transform: 'translateY(-1px)',
-          },
-        },
+      defaultProps: {
+        variant: 'filled',
       },
     },
     Textarea: {
-      baseStyle: {
-        bg: 'brand.darkGray',
-        borderColor: 'brand.lightGray',
-        transition: 'all 0.2s',
-        _hover: {
-          borderColor: 'brand.blue',
-          transform: 'translateY(-1px)',
-        },
-        _focus: {
-          borderColor: 'brand.blue',
-          boxShadow: 'none',
-          transform: 'translateY(-1px)',
+      variants: {
+        filled: {
+          bg: 'brand.darkGray',
+          borderColor: 'brand.lightGray',
+          color: 'white',
+          _hover: {
+            bg: 'brand.darkGray',
+            borderColor: 'brand.blue',
+          },
+          _focus: {
+            bg: 'brand.darkGray',
+            borderColor: 'brand.blue',
+            boxShadow: '0 0 0 1px var(--chakra-colors-brand-blue)',
+          },
         },
       },
+      defaultProps: {
+        variant: 'filled',
+      },
     },
-    Heading: {
+    FormLabel: {
       baseStyle: {
-        fontWeight: 'bold',
-        letterSpacing: 'tight',
+        color: 'brand.extraLightGray',
+        marginBottom: '2',
+        fontSize: 'sm',
       },
     },
   },

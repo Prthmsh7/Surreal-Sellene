@@ -11,6 +11,7 @@ import { Toaster } from 'react-hot-toast'
 import { WagmiConfig } from 'wagmi'
 import { config } from './config/wagmi'
 import { Spinner, Center } from '@chakra-ui/react'
+import { StoryIPRegistration } from './components/StoryIPRegistration'
 
 // Lazy load components
 const Home = lazy(() => import('./pages/Home'))
@@ -18,7 +19,6 @@ const About = lazy(() => import('./pages/About'))
 const Marketplace = lazy(() => import('./pages/Marketplace'))
 const Developers = lazy(() => import('./pages/Developers'))
 const Profile = lazy(() => import('./pages/Profile'))
-const StoryIPRegistration = lazy(() => import('./components/StoryIPRegistration'))
 const SecureAuth = lazy(() => import('./components/SecureAuth'))
 const DeBridgeTestPage = lazy(() => import('./pages/DeBridgeTestPage'))
 const DashboardLayout = lazy(() => import('./components/DashboardLayout'))
