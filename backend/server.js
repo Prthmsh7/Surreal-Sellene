@@ -37,7 +37,7 @@ if (!fs.existsSync('uploads')) {
 // Middleware
 app.use(express.json());
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://localhost:3000'],
+  origin: ['http://localhost:5173', 'http://localhost:3000', 'https://surreal-sellene.vercel.app'],
   methods: ['GET', 'POST', 'OPTIONS'],
   credentials: true,
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -94,11 +94,25 @@ async function registerIP(metadata) {
 
 // Log configuration on startup
 console.log('Story Protocol backend service running on port', process.env.PORT || 3001);
-console.log('CORS enabled for origins:', ['http://localhost:5173', 'http://localhost:3000'].join(', '));
+console.log('CORS enabled for origins:', ['http://localhost:5173', 'http://localhost:3000', 'https://surreal-sellene.vercel.app'].join(', '));
 console.log('Connected to network:', process.env.CHAIN_ID === '1315' ? 'Aeneid' : 'Unknown');
 console.log('Using NFT contract:', process.env.NFT_CONTRACT_ADDRESS);
 console.log('Wallet address:', process.env.WALLET_ADDRESS);
 console.log('RPC URL:', getRpcUrl());
+
+// Root route
+app.get('/', (req, res) => {
+  res.json({
+    message: 'Welcome to Surreal Sellene Backend API',
+    status: 'operational',
+    endpoints: {
+      root: '/',
+      health: '/health',
+      registerIP: '/register-ip'
+    },
+    version: '1.0.0'
+  });
+});
 
 app.post('/register-ip', upload.fields([
   { name: 'audio', maxCount: 1 },
