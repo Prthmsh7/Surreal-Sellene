@@ -158,11 +158,28 @@ app.post('/register-ip', upload.fields([
       // Check for insufficient funds error
       if (error.message?.includes('insufficient funds') || 
           error.message?.toLowerCase().includes('exceeds the balance')) {
-        return res.status(400).json({ 
-          error: 'Insufficient funds in your wallet. Please add funds to continue.',
-          details: {
+        return res.status(402).json({ 
+          success: false,
+          error: {
             type: 'INSUFFICIENT_FUNDS',
-            message: 'Your wallet does not have enough funds to pay for the transaction gas fees.'
+            code: 'PAYMENT_REQUIRED',
+            message: 'Insufficient funds in your wallet. Please add funds to continue.',
+            details: 'Your wallet does not have enough funds to pay for the transaction gas fees.'
+          }
+        });
+      }
+
+      // Handle other blockchain-related errors
+      if (error.message?.includes('gas') || 
+          error.message?.includes('transaction') ||
+          error.message?.includes('network')) {
+        return res.status(503).json({
+          success: false,
+          error: {
+            type: 'BLOCKCHAIN_ERROR',
+            code: 'SERVICE_UNAVAILABLE',
+            message: 'Blockchain transaction failed',
+            details: error.message
           }
         });
       }
@@ -170,13 +187,26 @@ app.post('/register-ip', upload.fields([
       // Handle other errors
       console.error('IP Registration failed:', error);
       res.status(500).json({ 
-        error: 'Failed to register IP',
-        details: error.message
+        success: false,
+        error: {
+          type: 'SERVER_ERROR',
+          code: 'INTERNAL_SERVER_ERROR',
+          message: 'Failed to register IP',
+          details: error.message
+        }
       });
     }
   } catch (error) {
     console.error('Server error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ 
+      success: false,
+      error: {
+        type: 'SERVER_ERROR',
+        code: 'INTERNAL_SERVER_ERROR',
+        message: 'Internal server error',
+        details: error.message
+      }
+    });
   }
 });
 
