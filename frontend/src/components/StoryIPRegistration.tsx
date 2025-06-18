@@ -14,6 +14,7 @@ import {
   Text
 } from '@chakra-ui/react';
 import { FaFileAudio, FaFileImage, FaFilePdf } from 'react-icons/fa';
+import { ENDPOINTS } from '../config/api';
 
 export function StoryIPRegistration() {
   const [title, setTitle] = useState('');
@@ -56,7 +57,7 @@ export function StoryIPRegistration() {
       if (uploadedFiles.image) formData.append('image', uploadedFiles.image);
       if (uploadedFiles.pdf) formData.append('pdf', uploadedFiles.pdf);
 
-      const response = await fetch('http://localhost:3001/register-ip', {
+      const response = await fetch(ENDPOINTS.registerIP, {
         method: 'POST',
         body: formData,
       });

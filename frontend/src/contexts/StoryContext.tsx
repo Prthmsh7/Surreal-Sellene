@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useToast } from '@chakra-ui/react';
 import { useAccount } from 'wagmi';
+import { ENDPOINTS } from '../config/api';
 
 interface RegisterIPResponse {
   ipId: string;
@@ -45,7 +46,7 @@ export function StoryProvider({ children }: { children: React.ReactNode }) {
         throw new Error('Please connect your wallet first');
       }
 
-      const response = await fetch('http://localhost:3001/register-ip', {
+      const response = await fetch(ENDPOINTS.registerIP, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

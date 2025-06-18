@@ -1,10 +1,10 @@
 // API URLs configuration
 const API_URLS = {
   development: 'http://localhost:3001',
-  production: 'https://surreal-sellene-backend.onrender.com'
+  production: import.meta.env.VITE_API_URL || 'https://surreal-sellene-backend.onrender.com'
 };
 
-export const API_BASE_URL = process.env.NODE_ENV === 'production' 
+export const API_BASE_URL = import.meta.env.PROD 
   ? API_URLS.production 
   : API_URLS.development;
 
