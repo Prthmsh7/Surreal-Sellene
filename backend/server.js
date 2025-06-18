@@ -37,12 +37,7 @@ if (!fs.existsSync('uploads')) {
 // Middleware
 app.use(express.json());
 app.use(cors({
-  origin: [
-    'http://localhost:5173',
-    'http://localhost:3000',
-    'https://surreal-sellene.vercel.app',
-    'https://surreal-sellene-git-main-prathmesh-shuklas-projects.vercel.app'
-  ],
+  origin: ['http://localhost:5173', 'http://localhost:3000', 'https://surreal-sellene.vercel.app'],
   methods: ['GET', 'POST', 'OPTIONS'],
   credentials: true,
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -99,12 +94,7 @@ async function registerIP(metadata) {
 
 // Log configuration on startup
 console.log('Story Protocol backend service running on port', process.env.PORT || 3001);
-console.log('CORS enabled for origins:', [
-  'http://localhost:5173',
-  'http://localhost:3000',
-  'https://surreal-sellene.vercel.app',
-  'https://surreal-sellene-git-main-prathmesh-shuklas-projects.vercel.app'
-].join(', '));
+console.log('CORS enabled for origins:', ['http://localhost:5173', 'http://localhost:3000', 'https://surreal-sellene.vercel.app'].join(', '));
 console.log('Connected to network:', process.env.CHAIN_ID === '1315' ? 'Aeneid' : 'Unknown');
 console.log('Using NFT contract:', process.env.NFT_CONTRACT_ADDRESS);
 console.log('Wallet address:', process.env.WALLET_ADDRESS);
@@ -168,28 +158,11 @@ app.post('/register-ip', upload.fields([
       // Check for insufficient funds error
       if (error.message?.includes('insufficient funds') || 
           error.message?.toLowerCase().includes('exceeds the balance')) {
-        return res.status(402).json({ 
-          success: false,
-          error: {
+        return res.status(400).json({ 
+          error: 'Insufficient funds in your wallet. Please add funds to continue.',
+          details: {
             type: 'INSUFFICIENT_FUNDS',
-            code: 'PAYMENT_REQUIRED',
-            message: 'Insufficient funds in your wallet. Please add funds to continue.',
-            details: 'Your wallet does not have enough funds to pay for the transaction gas fees.'
-          }
-        });
-      }
-
-      // Handle other blockchain-related errors
-      if (error.message?.includes('gas') || 
-          error.message?.includes('transaction') ||
-          error.message?.includes('network')) {
-        return res.status(503).json({
-          success: false,
-          error: {
-            type: 'BLOCKCHAIN_ERROR',
-            code: 'SERVICE_UNAVAILABLE',
-            message: 'Blockchain transaction failed',
-            details: error.message
+            message: 'Your wallet does not have enough funds to pay for the transaction gas fees.'
           }
         });
       }
@@ -197,26 +170,13 @@ app.post('/register-ip', upload.fields([
       // Handle other errors
       console.error('IP Registration failed:', error);
       res.status(500).json({ 
-        success: false,
-        error: {
-          type: 'SERVER_ERROR',
-          code: 'INTERNAL_SERVER_ERROR',
-          message: 'Failed to register IP',
-          details: error.message
-        }
+        error: 'Failed to register IP',
+        details: error.message
       });
     }
   } catch (error) {
     console.error('Server error:', error);
-    res.status(500).json({ 
-      success: false,
-      error: {
-        type: 'SERVER_ERROR',
-        code: 'INTERNAL_SERVER_ERROR',
-        message: 'Internal server error',
-        details: error.message
-      }
-    });
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 
