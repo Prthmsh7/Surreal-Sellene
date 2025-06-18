@@ -1,4 +1,4 @@
-# Surreal Sellene - Decentralized IP Marketplace
+# Sellene - A Decentralized Marketplace for Creators and Investors
 
 <video src="https://github.com/user-attachments/assets/08172f8b-b89a-4516-98e4-3a025912d098" controls>
   Your browser does not support the video tag.
