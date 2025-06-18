@@ -1,5 +1,7 @@
+import { API_BASE_URL } from './api';
+
 // Story Protocol API Configuration
-export const STORY_API_URL = 'http://localhost:3001/api';
+export const STORY_API_URL = `${API_BASE_URL}/api`;
 
 // GraphQL queries
 export const GET_NFTS_QUERY = `
